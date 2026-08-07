@@ -22,7 +22,13 @@ from functools import partial
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-DEFAULT_PORT = 8777
+# NOT 8777: that is the Remote User server's own port (Applications/Remote
+# User, server/config.py:78). Sharing it meant the playground refused to
+# start whenever the owner's remote-control server was up — and, worse, the
+# error invited whoever saw it to kill 'the other instance', which is
+# exactly what happened once, taking his running RemoteUser with it. A demo
+# must never contend for a port something real is listening on.
+DEFAULT_PORT = 8814
 PAGE = "demo/index.html"
 
 
