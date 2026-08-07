@@ -92,7 +92,7 @@ export const SPEC = {
   },
 
   rings: {
-    radius: 0.92,
+    radius: 1.15,
     perFace: {
       emerald:  {kind: "laurel",   label: "Laurel wreath"},
       sapphire: {kind: "water",    label: "Water"},
@@ -104,7 +104,7 @@ export const SPEC = {
   },
 
   sky: {
-    bodyRadius: 0.42,
+    bodyRadius: 0.44,
     sunriseHour: 6,
     sunsetHour: 18,
     sun:  {ambient: 0.40, power: 0.95, horizonColor: "#FFB454", zenithColor: "#FFF6E0"},

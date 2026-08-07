@@ -143,32 +143,40 @@ function water(color) {
 }
 
 // ── fire ─────────────────────────────────────────────────────────────────
-// Three ranks of tongues at different radii and speeds. Two details are what
-// separate fire from a wreath of petals, and the first draft had neither: the
-// tongue is ASYMMETRIC — it leans and curls at the tip like a real flame,
-// where a symmetric almond just reads as a leaf — and alternate tongues are
-// MIRRORED, so the ranks lean both ways instead of combing one direction. A
-// hot rim underneath gives the tongues something to burn from.
-const TONGUE = "M0 0C-5.4-5.2-4.6-12.4-.6-19.8-.4-15 1.4-13.6 2.6-15.8 5.2-11 5.4-4.6 0 0Z";
+const TONGUE = "M0 0C-6.2-3.4-7.4-9-4-14.4-3.6-19.6-1.6-24.2.6-29.4 " +
+               "1.2-23 3.4-19.4 4.6-14.4 7.2-9 6-3.4 0 0Z";
 
 function fire(color) {
+  // Three things separate flame from petals, and the first two drafts had
+  // none of them: the tongue is TALL and narrow (about 1:3, not 1:2), its
+  // sides curve INWARD before flicking out at the tip, and the ranks are
+  // dense enough to OVERLAP into a continuous wall instead of standing apart
+  // like a wreath. Heights vary hard — a fire with uniform tongues is a
+  // decoration. Underneath sits a bright core so the tongues burn from
+  // something.
   const ranks = [
-    {cls: "tmb-spin-med",  n: 24, r: R,      scale: 1.05, o: 0.92},
-    {cls: "tmb-spin-rev",  n: 18, r: R - 6,  scale: 0.74, o: 0.7},
-    {cls: "tmb-spin-slow", n: 30, r: R + 5,  scale: 0.52, o: 0.5}
+    {cls: "tmb-spin-med",  n: 30, r: R - 2, scale: 1.0,  o: 0.95, spread: 0.75},
+    {cls: "tmb-spin-rev",  n: 22, r: R - 8, scale: 0.62, o: 0.8,  spread: 0.5},
+    {cls: "tmb-spin-slow", n: 36, r: R + 3, scale: 0.46, o: 0.45, spread: 0.9}
   ];
-  const rim = layer("tmb-breathe");
-  rim.svg.appendChild(el("circle", {
-    cx: 0, cy: 0, r: R - 8, fill: "none", stroke: color,
-    "stroke-width": "6", "stroke-opacity": "0.16"
+  const glow = layer("tmb-breathe");
+  glow.svg.appendChild(el("circle", {
+    cx: 0, cy: 0, r: R - 6, fill: "none", stroke: color,
+    "stroke-width": "13", "stroke-opacity": "0.12"
   }));
-  const layers = [rim.div];
+  const core = layer("tmb-breathe");
+  core.svg.appendChild(el("circle", {
+    cx: 0, cy: 0, r: R - 9, fill: "none", stroke: color,
+    "stroke-width": "3.5", "stroke-opacity": "0.55"
+  }));
+  const layers = [glow.div, core.div];
   for (const rank of ranks) {
     const {div, svg} = layer(rank.cls);
     const g = el("g", {fill: color, "fill-opacity": String(rank.o)});
     for (let i = 0; i < rank.n; i++) {
       const a = i * (360 / rank.n);
-      const jitter = 0.75 + 0.5 * ((i * 7919) % 13) / 13;   // stable pseudo-random
+      // stable pseudo-random, so the ring is the same every load
+      const jitter = 1 - rank.spread / 2 + rank.spread * ((i * 7919) % 23) / 23;
       const flip = i % 2 ? " scale(-1 1)" : "";
       const tongue = el("path", {
         d: TONGUE,

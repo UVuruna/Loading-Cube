@@ -83,8 +83,8 @@
   },
 
   "rings": {
-    "_comment": "One ring per face, and the ring shown is the one belonging to the face currently on TOP. These are compositions, not icons repeated round a circle (owner 2026-08-07: 'ne bezveze slicice listova nego napredni vizuelno lepi'). `radius` is a multiple of the cube's edge, measured from the cube centre — the owner's sketches put the ring well clear of the cube, never hugging it.",
-    "radius": 0.92,
+    "_comment": "One ring per face, and the ring shown is the one belonging to the face currently on TOP. These are compositions, not icons repeated round a circle (owner 2026-08-07: 'ne bezveze slicice listova nego napredni vizuelno lepi'). `radius` is a multiple of the cube's edge, measured from the cube centre. It must clear the cube's WIDEST moment, not its edge: a tumbling cube spans up to 0.866 of its edge from the centre (the space diagonal), so 0.92 left almost no air and the ring read as hugging. 1.15 gives the ~25% gap the owner's sketches show.",
+    "radius": 1.15,
     "perFace": {
       "emerald":  {"kind": "laurel",   "label": "Laurel wreath"},
       "sapphire": {"kind": "water",    "label": "Water"},
@@ -97,7 +97,7 @@
 
   "sky": {
     "_comment": "The sun and the moon are real bodies riding a circle around the cube, not merely a light direction (owner 2026-08-07). Upper half of the circle is the sun's, lower half the moon's: 06:00 left, 12:00 at the zenith, 18:00 right, 00:00 at the bottom. A full moon really does light the cube — from below, so it is the lower faces that catch it — and its strength follows the phase.",
-    "bodyRadius": 0.42,
+    "bodyRadius": 0.44,
     "sunriseHour": 6,
     "sunsetHour": 18,
     "sun":  {"ambient": 0.40, "power": 0.95, "horizonColor": "#FFB454", "zenithColor": "#FFF6E0"},

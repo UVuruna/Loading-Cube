@@ -71,7 +71,7 @@ class TumblerInstance {
     this.ringDiameter = (size * SPEC.rings.radius) / RING_UNIT;
     let box = size * 1.35;
     if (o.ring) box = Math.max(box, this.ringDiameter * 1.04);
-    if (o.sky) box *= 1.55;                   // room for the body outside the ring
+    if (o.sky) box *= 1.2;                    // room for the body outside the ring
     this.box = Math.round(box);
 
     ensureStyles(this.host.ownerDocument || document);
@@ -88,7 +88,7 @@ class TumblerInstance {
       this.body = document.createElement("img");
       this.body.className = "tmb-body";
       this.body.alt = "";
-      this.body.width = Math.round(this.box * 0.19);
+      this.body.width = Math.round(this.box * 0.17);
       root.appendChild(this.body);
     }
 

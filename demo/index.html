@@ -34,7 +34,11 @@ section:first-of-type{border-top:0;padding-top:0}
 .grid{display:grid;gap:20px}
 .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
-.split{display:grid;grid-template-columns:360px minmax(0,1fr);gap:26px;align-items:start}
+.split{display:grid;grid-template-columns:400px minmax(0,1fr);gap:26px;align-items:start}
+/* One control per row. Two columns cut 'Watercolour with gold frame' and
+   'neprekidno kroz svih 6' mid-word, with the native caret sitting on top
+   of the truncation — a select cannot ellipsis its way out of that. */
+.fields{display:grid;grid-template-columns:1fr;gap:14px}
 
 label.fld{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.15em;
   text-transform:uppercase;color:var(--muted);margin:0 0 6px}
@@ -88,7 +92,7 @@ pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:
   <div class="split">
     <div>
       <div class="panel">
-        <div class="grid g2" style="gap:14px">
+        <div class="fields">
           <div><label class="fld" for="c-palette">Paleta</label><select id="c-palette"></select></div>
           <div><label class="fld" for="c-finish">Dezen</label><select id="c-finish"></select></div>
           <div><label class="fld" for="c-emblems">Amblemi</label><select id="c-emblems"></select></div>
