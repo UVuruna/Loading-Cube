@@ -1,11 +1,11 @@
-// The public face of the package: `Tumbler.mount(target, options)`.
+// The public face of the package: `LoadingCube.mount(target, options)`.
 //
 // WHAT IS CORE AND WHAT IS OPTIONAL (owner 2026-08-07). Core is exactly one
 // thing: the colour cube turning through its six faces. Emblems, the ring and
 // the sky are all opt-in, and a consumer states what it wants the way it
 // would state anything else it passes to a constructor:
 //
-//     Tumbler.mount("#splash", {
+//     LoadingCube.mount("#splash", {
 //       size: 180, palette: "gems", finish: "aquarel",
 //       emblems: "elements", ring: true, sky: true,
 //       background: "transparent"
@@ -16,7 +16,7 @@
 // loop, it starts with the first instance and stops with the last, and it
 // does nothing at all while every instance is paused.
 //
-// See src/__about/tumbler.md and src/__flow/tumbler.md.
+// See src/__about/loading-cube.md and src/__flow/loading-cube.md.
 "use strict";
 
 import { SPEC, FACES } from "./spec.js";
@@ -53,7 +53,7 @@ function startLoop() {
   }
 }
 
-class TumblerInstance {
+class LoadingCubeInstance {
   constructor(host, options) {
     this.host = host;
     this.options = {...SPEC.defaults, ...options};
@@ -78,15 +78,15 @@ class TumblerInstance {
     this.host.textContent = "";
 
     const root = document.createElement("div");
-    root.className = `tmb-root tmb-bg-${o.background}`;
+    root.className = `lc-root lc-bg-${o.background}`;
     root.style.width = `${this.box}px`;
     root.style.height = `${this.box}px`;
-    if (o.spinSeconds) root.style.setProperty("--tmb-spin", `${o.spinSeconds}s`);
+    if (o.spinSeconds) root.style.setProperty("--lc-spin", `${o.spinSeconds}s`);
     this.root = root;
 
     if (o.sky) {
       this.body = document.createElement("img");
-      this.body.className = "tmb-body";
+      this.body.className = "lc-body";
       this.body.alt = "";
       this.body.width = Math.round(this.box * 0.17);
       root.appendChild(this.body);
@@ -102,9 +102,9 @@ class TumblerInstance {
     }
 
     const stage = document.createElement("div");
-    stage.className = "tmb-stage";
+    stage.className = "lc-stage";
     const cube = document.createElement("div");
-    cube.className = "tmb-cube";
+    cube.className = "lc-cube";
     cube.style.width = `${size}px`;
     cube.style.height = `${size}px`;
 
@@ -112,7 +112,7 @@ class TumblerInstance {
     for (const face of FACES) {
       const colours = palette[face];
       const el = document.createElement("div");
-      el.className = "tmb-face";
+      el.className = "lc-face";
       Object.assign(el.style, FINISHES[finish](colours));
       el.style.borderRadius = FINISH_RADIUS[finish];
       el.style.transform =
@@ -122,9 +122,9 @@ class TumblerInstance {
       if (emblem) el.appendChild(emblem);
 
       const shade = document.createElement("div");
-      shade.className = "tmb-shade";
+      shade.className = "lc-shade";
       const lit = document.createElement("div");
-      lit.className = "tmb-lit";
+      lit.className = "lc-lit";
       el.append(shade, lit);
 
       this.faces[face] = {el, shade, lit};
@@ -210,8 +210,8 @@ class TumblerInstance {
     this._build();
   }
 
-  pause() { this.running = false; this.root.classList.add("tmb-paused"); }
-  play() { this.running = true; this.root.classList.remove("tmb-paused"); startLoop(); }
+  pause() { this.running = false; this.root.classList.add("lc-paused"); }
+  play() { this.running = true; this.root.classList.remove("lc-paused"); startLoop(); }
 
   destroy() {
     instances.delete(this);
@@ -230,8 +230,8 @@ class TumblerInstance {
  */
 export function mount(target, options = {}) {
   const host = typeof target === "string" ? document.querySelector(target) : target;
-  if (!host) throw new Error(`Tumbler.mount: no element for ${target}`);
-  return new TumblerInstance(host, options);
+  if (!host) throw new Error(`LoadingCube.mount: no element for ${target}`);
+  return new LoadingCubeInstance(host, options);
 }
 
 export { SPEC, FACES };

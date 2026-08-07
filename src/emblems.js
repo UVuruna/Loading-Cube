@@ -77,7 +77,7 @@ export function emblemElement(family, face, color) {
   if (!name || !GLYPHS[name]) return null;
   const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svg.setAttribute("viewBox", "0 0 24 24");
-  svg.setAttribute("class", "tmb-emblem");
+  svg.setAttribute("class", "lc-emblem");
   svg.setAttribute("fill", "none");
   svg.setAttribute("stroke", color);
   svg.setAttribute("stroke-width", "1.7");

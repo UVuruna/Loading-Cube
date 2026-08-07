@@ -1,7 +1,7 @@
 # src/ — the renderer
 
 One module per responsibility, no build step, no dependencies. A consumer
-imports `tumbler.js` and nothing else; every other module here exists because
+imports `loading-cube.js` and nothing else; every other module here exists because
 it is a different KIND of decision.
 
 | Module | Responsibility | Docs |
@@ -13,7 +13,7 @@ it is a different KIND of decision.
 | `rings.js` | the six ring compositions | [about](__about/rings.md) · [flow](__flow/rings.md) |
 | `sky.js` | where the sun and moon are, and what they light | [about](__about/sky.md) · [flow](__flow/sky.md) |
 | `styles.js` | the one injected stylesheet | [about](__about/styles.md) |
-| `tumbler.js` | the public API and the shared frame loop | [about](__about/tumbler.md) · [flow](__flow/tumbler.md) |
+| `loading-cube.js` | the public API and the shared frame loop | [about](__about/loading-cube.md) · [flow](__flow/loading-cube.md) |
 
 ## Why these boundaries
 
@@ -27,5 +27,5 @@ only `textures.js` and `rings.js` — the two files genuinely about CSS and SVG
 ## The one import rule
 
 `spec.js` imports nothing. Everything else may import `spec.js`. Only
-`tumbler.js` imports the rest. A cycle here would mean two modules disagree
+`loading-cube.js` imports the rest. A cycle here would mean two modules disagree
 about who owns a decision.

@@ -1,6 +1,6 @@
-# tumbler.js
+# loading-cube.js
 
-The public face: `Tumbler.mount(target, options)`.
+The public face: `LoadingCube.mount(target, options)`.
 
 ## Core versus optional
 
@@ -23,4 +23,4 @@ room to stand clear of the cube, and the sun needs room outside the ring. The
 orbit radius is additionally clamped so the DISC fits, not just its centre —
 without that the sun was sliced in half at noon by the root's `overflow`.
 
-Flow: [__flow/tumbler.md](../__flow/tumbler.md).
+Flow: [__flow/loading-cube.md](../__flow/loading-cube.md).

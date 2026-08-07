@@ -1,4 +1,4 @@
-# Tumbler
+# Loading Cube
 
 A loading animation for every screen that has to wait: a jewelled cube that
 tumbles through six colours, one face at a time. It is a package, not an app —
@@ -39,9 +39,9 @@ option on one page, a live cube, and the exact call to copy. See
 ## Use it
 
 ```js
-import Tumbler from "./src/tumbler.js";
+import LoadingCube from "./src/loading-cube.js";
 
-Tumbler.mount("#splash", {
+LoadingCube.mount("#splash", {
   size:       180,
   palette:    "gems",
   finish:     "aquarel",

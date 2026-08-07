@@ -34,7 +34,7 @@ function el(tag, attrs = {}) {
 
 function layer(className) {
   const div = document.createElement("div");
-  div.className = "tmb-ring-layer" + (className ? " " + className : "");
+  div.className = "lc-ring-layer" + (className ? " " + className : "");
   const svg = el("svg", {viewBox: "-100 -100 200 200"});
   div.appendChild(svg);
   return {div, svg};
@@ -53,7 +53,7 @@ const at = (deg, radius) => [
 const LEAF = "M0 0C4.6-2.4 8.2-7.6 7.4-14.6 2.8-12.2-.8-7 0 0Z";
 
 function laurel(color) {
-  const {div, svg} = layer("tmb-breathe");
+  const {div, svg} = layer("lc-breathe");
   const branch = el("g", {fill: color, "fill-opacity": "0.30", stroke: color,
                           "stroke-width": "1.2", "stroke-linejoin": "round"});
   const N = 11;
@@ -114,9 +114,9 @@ function wavePath(radius, amplitude, lobes, phase) {
 
 function water(color) {
   const bands = [
-    {cls: "tmb-spin-slow", r: R,      amp: 4.5, lobes: 9,  phase: 0,   w: 3.2, o: 0.85},
-    {cls: "tmb-spin-rev",  r: R - 7,  amp: 3.0, lobes: 13, phase: 40,  w: 2.0, o: 0.55},
-    {cls: "tmb-spin-med",  r: R + 7,  amp: 5.5, lobes: 7,  phase: 110, w: 1.6, o: 0.40}
+    {cls: "lc-spin-slow", r: R,      amp: 4.5, lobes: 9,  phase: 0,   w: 3.2, o: 0.85},
+    {cls: "lc-spin-rev",  r: R - 7,  amp: 3.0, lobes: 13, phase: 40,  w: 2.0, o: 0.55},
+    {cls: "lc-spin-med",  r: R + 7,  amp: 5.5, lobes: 7,  phase: 110, w: 1.6, o: 0.40}
   ];
   const layers = bands.map(b => {
     const {div, svg} = layer(b.cls);
@@ -128,13 +128,13 @@ function water(color) {
     return div;
   });
   // droplets thrown off the crest
-  const {div, svg} = layer("tmb-spin-med");
+  const {div, svg} = layer("lc-spin-med");
   for (let i = 0; i < 7; i++) {
     const a = i * (360 / 7) + 12;
     const [x, y] = at(a, R + 13);
     const drop = el("circle", {cx: x.toFixed(2), cy: y.toFixed(2), r: 2.1,
                                fill: color, "fill-opacity": "0.6"});
-    drop.setAttribute("class", "tmb-twinkle");
+    drop.setAttribute("class", "lc-twinkle");
     drop.style.animationDelay = `${(i * 0.37).toFixed(2)}s`;
     svg.appendChild(drop);
   }
@@ -155,16 +155,16 @@ function fire(color) {
   // decoration. Underneath sits a bright core so the tongues burn from
   // something.
   const ranks = [
-    {cls: "tmb-spin-med",  n: 30, r: R - 2, scale: 1.0,  o: 0.95, spread: 0.75},
-    {cls: "tmb-spin-rev",  n: 22, r: R - 8, scale: 0.62, o: 0.8,  spread: 0.5},
-    {cls: "tmb-spin-slow", n: 36, r: R + 3, scale: 0.46, o: 0.45, spread: 0.9}
+    {cls: "lc-spin-med",  n: 30, r: R - 2, scale: 1.0,  o: 0.95, spread: 0.75},
+    {cls: "lc-spin-rev",  n: 22, r: R - 8, scale: 0.62, o: 0.8,  spread: 0.5},
+    {cls: "lc-spin-slow", n: 36, r: R + 3, scale: 0.46, o: 0.45, spread: 0.9}
   ];
-  const glow = layer("tmb-breathe");
+  const glow = layer("lc-breathe");
   glow.svg.appendChild(el("circle", {
     cx: 0, cy: 0, r: R - 6, fill: "none", stroke: color,
     "stroke-width": "13", "stroke-opacity": "0.12"
   }));
-  const core = layer("tmb-breathe");
+  const core = layer("lc-breathe");
   core.svg.appendChild(el("circle", {
     cx: 0, cy: 0, r: R - 9, fill: "none", stroke: color,
     "stroke-width": "3.5", "stroke-opacity": "0.55"
@@ -183,7 +183,7 @@ function fire(color) {
         transform: `rotate(${a}) translate(0 ${-rank.r}) ` +
                    `scale(${(rank.scale * jitter).toFixed(3)})${flip}`
       });
-      tongue.setAttribute("class", "tmb-flicker");
+      tongue.setAttribute("class", "lc-flicker");
       tongue.style.animationDelay = `${((i % 7) * 0.13 + (i % 3) * 0.05).toFixed(2)}s`;
       g.appendChild(tongue);
     }
@@ -212,14 +212,14 @@ function joltPath(radius, teeth, depth, seed) {
 
 function electric(color) {
   const layers = [];
-  const glow = layer("tmb-spin-slow");
+  const glow = layer("lc-spin-slow");
   glow.svg.appendChild(el("path", {
     d: joltPath(R, 44, 6, 7), fill: "none", stroke: color,
     "stroke-width": "7", "stroke-opacity": "0.13", "stroke-linejoin": "round"
   }));
   layers.push(glow.div);
 
-  const main = layer("tmb-spin-med");
+  const main = layer("lc-spin-med");
   main.svg.appendChild(el("path", {
     d: joltPath(R, 44, 6, 7), fill: "none", stroke: color,
     "stroke-width": "1.8", "stroke-opacity": "0.9", "stroke-linejoin": "round"
@@ -229,11 +229,11 @@ function electric(color) {
     "stroke-width": "2.6", "stroke-linecap": "round", "stroke-linejoin": "round",
     "stroke-dasharray": "26 470"
   });
-  spark.setAttribute("class", "tmb-chase");
+  spark.setAttribute("class", "lc-chase");
   main.svg.appendChild(spark);
   layers.push(main.div);
 
-  const counter = layer("tmb-spin-rev");
+  const counter = layer("lc-spin-rev");
   counter.svg.appendChild(el("path", {
     d: joltPath(R - 9, 34, 4.5, 11), fill: "none", stroke: color,
     "stroke-width": "1.1", "stroke-opacity": "0.45", "stroke-linejoin": "round"
@@ -259,7 +259,7 @@ function corona(color) {
       const ray = el("line", {x1: x1.toFixed(2), y1: y1.toFixed(2),
                               x2: x2.toFixed(2), y2: y2.toFixed(2)});
       if (!long) {
-        ray.setAttribute("class", "tmb-twinkle");
+        ray.setAttribute("class", "lc-twinkle");
         ray.style.animationDelay = `${((i % 9) * 0.21).toFixed(2)}s`;
       }
       g.appendChild(ray);
@@ -267,15 +267,15 @@ function corona(color) {
     svg.appendChild(g);
     return div;
   };
-  const rim = layer("tmb-breathe");
+  const rim = layer("lc-breathe");
   rim.svg.appendChild(el("circle", {
     cx: 0, cy: 0, r: R - 6, fill: "none", stroke: color,
     "stroke-width": "1.6", "stroke-opacity": "0.45"
   }));
   return [
     rim.div,
-    build(48, R - 4, R + 15, 1.7, 0.8, "tmb-spin-slow", 0),
-    build(36, R - 2, R + 9, 1.1, 0.45, "tmb-spin-rev", 4)
+    build(48, R - 4, R + 15, 1.7, 0.8, "lc-spin-slow", 0),
+    build(36, R - 2, R + 9, 1.1, 0.45, "lc-spin-rev", 4)
   ];
 }
 
@@ -294,7 +294,7 @@ function phasePath(r, phase) {
 }
 
 function phases(color) {
-  const {div, svg} = layer("tmb-spin-slow");
+  const {div, svg} = layer("lc-spin-slow");
   const N = 12, moon = 7.5;
   for (let i = 0; i < N; i++) {
     const a = i * (360 / N);
@@ -319,7 +319,7 @@ const BUILDERS = {laurel, water, fire, electric, corona, phases};
  */
 export function buildRing(kind, color, diameter) {
   const wrap = document.createElement("div");
-  wrap.className = "tmb-ring";
+  wrap.className = "lc-ring";
   wrap.style.width = `${diameter}px`;
   wrap.style.height = `${diameter}px`;
   const build = BUILDERS[kind] || BUILDERS.laurel;

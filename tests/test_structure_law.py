@@ -7,7 +7,7 @@ a RATCHET allowlist, and a ratcheted file may only ever SHRINK.
 This project is JavaScript with one Python launcher, and both are counted: a
 1,200-line rings.js would be exactly the same defect as a 1,200-line main.py.
 
-THE RATCHET IS EMPTY, and the intent is that it stays that way. Tumbler is
+THE RATCHET IS EMPTY, and the intent is that it stays that way. Loading Cube is
 built as one module per responsibility from day one — spec, geometry,
 textures, emblems, rings, sky, styles, the public face — precisely so no file
 ever has a reason to grow into a god-file. Adding an entry here needs the
@@ -84,4 +84,4 @@ def test_the_guard_is_actually_looking_at_this_project():
     seen = {path.suffix for path in _source_files()}
     assert seen == {".py", ".js"}, seen
     names = {path.name for path in _source_files()}
-    assert {"tumbler.js", "geometry.js", "rings.js", "main.py"} <= names
+    assert {"loading-cube.js", "geometry.js", "rings.js", "main.py"} <= names

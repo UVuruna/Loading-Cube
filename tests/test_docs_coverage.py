@@ -45,7 +45,7 @@ TIERS: dict[str, str] = {
     "src/rings.js":    ALGORITHMIC,
     "src/sky.js":      ALGORITHMIC,
     "src/styles.js":   STANDARD,
-    "src/tumbler.js":  ALGORITHMIC,
+    "src/loading-cube.js":  ALGORITHMIC,
 }
 
 # tests/ files use the dedicated "tests" tier: NO per-file docs, ever -- only
@@ -162,7 +162,7 @@ def test_no_orphaned_about_or_flow_doc():
 
 
 def test_the_guard_is_actually_looking_at_this_project():
-    # Nine source files, not thirty: Tumbler is one component, not a suite.
+    # Nine source files, not thirty: Loading Cube is one component, not a suite.
     # The number still has to be REAL — a TIERS dict that silently emptied
     # would pass every other test in this file.
     assert len(TIERS) >= 9, len(TIERS)

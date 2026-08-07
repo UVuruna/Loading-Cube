@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tumbler — playground</title>
+<title>Loading Cube — playground</title>
 <style>
 /* One fixed dark scheme, background and text both stated here — never
    inherited from a host (root rules/PLAN.md, Communication). */
@@ -81,7 +81,7 @@ pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:
 <div class="wrap">
 
 <header>
-  <p class="eyebrow">Tumbler · loading cube · playground</p>
+  <p class="eyebrow">Loading Cube · loading cube · playground</p>
   <h1>Izaberi svoju verziju</h1>
   <p class="lede">Osnovno je samo kocka koja se okreće kroz šest boja. Sve ostalo — amblemi,
     prsten, sunce i mesec, pozadina — bira onaj ko paket ugrađuje. Ovde probaj kombinaciju,
@@ -153,7 +153,7 @@ pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:
 </div>
 
 <script type="module">
-import Tumbler, { SPEC, FACES } from "../src/tumbler.js";
+import LoadingCube, { SPEC, FACES } from "../src/loading-cube.js";
 import { buildRing } from "../src/rings.js";
 import { FINISHES, FINISH_RADIUS } from "../src/textures.js";
 import { skyAt, moonPhase, moonIllumination, hoursOf } from "../src/sky.js";
@@ -188,15 +188,15 @@ function build(){
   const viewer = $("viewer");
   viewer.classList.toggle("checker", state.background === "transparent");
   if (cube) cube.destroy();
-  cube = Tumbler.mount(viewer, {
+  cube = LoadingCube.mount(viewer, {
     ...state,
     clock: () => hour,
     autoplay: playing
   });
   if (!playing) cube.pause();
   $("snippet").textContent =
-    `import Tumbler from "tumbler/src/tumbler.js";\n\n` +
-    `Tumbler.mount("#splash", {\n` +
+    `import LoadingCube from "loading-cube/src/loading-cube.js";\n\n` +
+    `LoadingCube.mount("#splash", {\n` +
     `  size:       ${state.size},\n` +
     `  palette:    ${JSON.stringify(state.palette)},\n` +
     `  finish:     ${JSON.stringify(state.finish)},\n` +
@@ -301,7 +301,7 @@ let acc = 0, work = 0, n = 0, last = performance.now();
   work += performance.now() - t0;
   if (n >= 30){
     const frame = acc / n;
-    // Everything Tumbler does happens inside its own rAF, so this samples the
+    // Everything Loading Cube does happens inside its own rAF, so this samples the
     // gap this page leaves behind: the honest number is the share of a frame.
     $("p-frame").textContent = frame.toFixed(1);
     $("p-work").textContent = (work / n).toFixed(3);

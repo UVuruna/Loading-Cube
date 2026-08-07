@@ -4,9 +4,9 @@ The one stylesheet, injected once per document on the first mount.
 
 ## Why the CSS lives in JS
 
-A consumer gets Tumbler by importing one module. Asking them to also remember
+A consumer gets Loading Cube by importing one module. Asking them to also remember
 a `<link>` is how a component ends up unstyled in somebody's build. Every rule
-is namespaced `tmb-` and touches nothing outside the mounted element, so
+is namespaced `lc-` and touches nothing outside the mounted element, so
 dropping it into a host page cannot collide with the host's own styles.
 
 ## Only compositor properties

@@ -1,7 +1,7 @@
 # demo/ — the playground
 
 `index.html` is the mini application the owner asked for: every option on one
-page, a live cube, and the exact `Tumbler.mount(...)` call to copy into your
+page, a live cube, and the exact `LoadingCube.mount(...)` call to copy into your
 own code.
 
 Run it with `python main.py` from the project root — see the project

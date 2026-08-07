@@ -1,4 +1,4 @@
-"""Tumbler's playground launcher — `python main.py` and the browser opens.
+"""Loading Cube's playground launcher — `python main.py` and the browser opens.
 
 WHY A SERVER AND NOT JUST A FILE. The renderer ships as ES modules with no
 build step, which is what lets a website drop `src/` in and go. Browsers
@@ -55,7 +55,7 @@ def serve(port: int, open_browser: bool) -> int:
         return 1
 
     url = f"http://127.0.0.1:{port}/{PAGE}"
-    print(f"Tumbler playground: {url}")
+    print(f"Loading Cube playground: {url}")
     print("Ctrl+C to stop.")
     if open_browser:
         threading.Timer(0.4, webbrowser.open, args=(url,)).start()
@@ -69,7 +69,7 @@ def serve(port: int, open_browser: bool) -> int:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Serve the Tumbler playground.")
+    parser = argparse.ArgumentParser(description="Serve the Loading Cube playground.")
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     parser.add_argument("--no-browser", action="store_true",
                         help="serve without opening a browser window")

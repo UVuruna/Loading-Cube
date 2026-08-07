@@ -1,4 +1,4 @@
-# CLAUDE.md — Tumbler
+# CLAUDE.md — Loading Cube
 
 Project-specific guidance. Inherits the [root constitution](../../CLAUDE.md) —
 read it first, then use its Router to load only the rulebook your job needs.
@@ -20,7 +20,7 @@ alternatives (Three.js, a canvas painter) are written out in
 [README](README.md) → *Why JavaScript and no build step*.
 
 This does NOT contradict the GUI default policy (root `START.md` → Step 3,
-C# / WPF for new desktop GUIs). Tumbler has no GUI of its own: it is a
+C# / WPF for new desktop GUIs). Loading Cube has no GUI of its own: it is a
 component that mounts into someone else's. The desktop story is a future
 `Viewport3D` renderer reading the same `shared/spec.json` — which is exactly
 why the spec is a JSON file and not a JavaScript object.
@@ -64,7 +64,7 @@ These are ADDITIONS to the root's. Both have teeth.
 The `planets` and `virtues` emblem families are copied from
 `Gadgets/DOMY Watch/SYMBOLISM.md`, and the axis-to-colour map is shared with
 `Gadgets/3D Preview`. If either changes, this project follows — never the
-other way round. The `elements` family is Tumbler's own and is the default
+other way round. The `elements` family is Loading Cube's own and is the default
 (owner 2026-08-07: moon on amethyst, water on sapphire).
 
 ## Verifying Work Here
