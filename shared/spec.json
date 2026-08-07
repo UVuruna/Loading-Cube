@@ -1,0 +1,122 @@
+{
+  "_comment": "THE SPEC — the single source of truth every renderer reads. Web (src/spec.js) mirrors this file exactly and tests/test_spec_parity.py fails the build when the two drift; a future C#/WPF or Qt renderer reads THIS file, never the JS. Only cross-stack facts live here: colours, face order, timing, which rings and emblems exist, the sun/moon rules. Web-only recipes (CSS gradient strings, SVG path data) stay in src/ — they cannot be honoured by a stack that has no CSS.",
+  "version": 1,
+
+  "axes": {
+    "_comment": "The house axis language, shared with Gadgets/3D Preview (shared/spec.json) and Gadgets/DOMY Watch (SYMBOLISM.md). Colour names are POSITIONAL — the palette decides the hue, never the meaning.",
+    "gold":     {"axis": "+y", "position": "top",    "opposite": "amethyst"},
+    "copper":   {"axis": "+x", "position": "right",  "opposite": "sapphire"},
+    "ruby":     {"axis": "-z", "position": "back",   "opposite": "emerald"},
+    "amethyst": {"axis": "-y", "position": "bottom", "opposite": "gold"},
+    "sapphire": {"axis": "-x", "position": "left",   "opposite": "copper"},
+    "emerald":  {"axis": "+z", "position": "front",  "opposite": "ruby"}
+  },
+
+  "sequence": {
+    "_comment": "Owner decree 2026-08-07. The order each face takes the TOP, and it is the colour wheel: yellow, orange, red, purple, blue, green. By position: top, right, back, bottom, left, front. Every consecutive pair shares a cube edge, so every transition is one 90-degree tumble and no step is a double flip — tests/test_face_order.py proves it rather than trusting it. It is also, face for face, the order of the six arms on the DOMY Watch dial.",
+    "tops": ["gold", "copper", "ruby", "amethyst", "sapphire", "emerald"],
+    "mode": "continuous",
+    "modes": ["continuous", "per-show"]
+  },
+
+  "timing": {
+    "spinSpeed": 78,
+    "dwellDegrees": 320,
+    "tumbleSeconds": 0.7,
+    "viewTiltDegrees": -20
+  },
+
+  "palettes": {
+    "gems": {
+      "label": "Royal Gems",
+      "gold":     {"base": "#D9A62C", "lit": "#FFE08A", "deep": "#7E5510", "emblem": "#3A2705"},
+      "copper":   {"base": "#C25A11", "lit": "#F79B4E", "deep": "#5F2A04", "emblem": "#FFEAD6"},
+      "ruby":     {"base": "#A81436", "lit": "#EF5C7B", "deep": "#500518", "emblem": "#FFE0E6"},
+      "amethyst": {"base": "#6B2FA8", "lit": "#B183EC", "deep": "#33125A", "emblem": "#F0DEFF"},
+      "sapphire": {"base": "#1F3BB8", "lit": "#6E8BFF", "deep": "#0C1861", "emblem": "#DDE5FF"},
+      "emerald":  {"base": "#0E7A57", "lit": "#3ED3A0", "deep": "#043826", "emblem": "#DCFFF1"}
+    },
+    "velvet": {
+      "label": "Midnight Velvet",
+      "gold":     {"base": "#6E5619", "lit": "#C9A227", "deep": "#2E2208", "emblem": "#FFE9AE"},
+      "copper":   {"base": "#5E2C0E", "lit": "#B96A28", "deep": "#291102", "emblem": "#FFE3C8"},
+      "ruby":     {"base": "#4E1026", "lit": "#A72E52", "deep": "#22040F", "emblem": "#FFD5DF"},
+      "amethyst": {"base": "#341A55", "lit": "#7A4CB8", "deep": "#150826", "emblem": "#E9D5FF"},
+      "sapphire": {"base": "#16256B", "lit": "#3E5BD4", "deep": "#070E30", "emblem": "#D5DEFF"},
+      "emerald":  {"base": "#0A3F31", "lit": "#1E8A67", "deep": "#031B14", "emblem": "#CFF5E6"}
+    },
+    "obsidian": {
+      "label": "Obsidian and Gold",
+      "gold":     {"base": "#0D0E14", "lit": "#FFE08A", "deep": "#05060A", "emblem": "#FFE08A"},
+      "copper":   {"base": "#0D0E14", "lit": "#F79B4E", "deep": "#05060A", "emblem": "#F79B4E"},
+      "ruby":     {"base": "#0D0E14", "lit": "#EF5C7B", "deep": "#05060A", "emblem": "#EF5C7B"},
+      "amethyst": {"base": "#0D0E14", "lit": "#B183EC", "deep": "#05060A", "emblem": "#B183EC"},
+      "sapphire": {"base": "#0D0E14", "lit": "#6E8BFF", "deep": "#05060A", "emblem": "#6E8BFF"},
+      "emerald":  {"base": "#0D0E14", "lit": "#3ED3A0", "deep": "#05060A", "emblem": "#3ED3A0"}
+    }
+  },
+
+  "finishes": {
+    "_comment": "Names only — the recipes are per-stack (src/textures.js for the web). A stack that cannot draw one must say so, never silently substitute another.",
+    "matte":       {"label": "Matte enamel"},
+    "velvet":      {"label": "Velvet"},
+    "leather":     {"label": "Leather / plaster"},
+    "leatherdeep": {"label": "Deep leather"},
+    "aquarel":     {"label": "Watercolour with gold frame"},
+    "damask":      {"label": "Damask"},
+    "frame":       {"label": "Gold frame"},
+    "enamel":      {"label": "Enamel / cloisonne"},
+    "obsidian":    {"label": "Obsidian"}
+  },
+
+  "emblems": {
+    "_comment": "Owner decision 2026-08-07: `elements` is the DEFAULT. The moon sits on amethyst and water on sapphire, and that is not a clash with the DOMY canon but the same idea read one layer down — blue IS water and the moon is what pulls it, while purple is the night the moon hangs in. `elementsDomy` keeps the strict reading (moon on sapphire) for anyone who wants the dial's letter.",
+    "default": "elements",
+    "families": {
+      "elements":     {"label": "Elements",        "gold": "sun",     "copper": "flame", "ruby": "bolt",   "amethyst": "moon",    "sapphire": "wave",   "emerald": "leaf"},
+      "elementsDomy": {"label": "Elements (DOMY)", "gold": "sun",     "copper": "flame", "ruby": "bolt",   "amethyst": "star",    "sapphire": "moon",   "emerald": "leaf"},
+      "planets":      {"label": "Planets (DOMY)",  "gold": "jupiter", "copper": "mars",  "ruby": "venus",  "amethyst": "mercury", "sapphire": "luna",   "emerald": "saturn"},
+      "virtues":      {"label": "Virtues (DOMY)",  "gold": "give",    "copper": "shield","ruby": "heart",  "amethyst": "eye",     "sapphire": "stillwater", "emerald": "hourglass"},
+      "heraldic":     {"label": "Heraldic",        "gold": "crown",   "copper": "key",   "ruby": "shield", "amethyst": "star",    "sapphire": "anchor", "emerald": "laurel"},
+      "ordinal":      {"label": "Ordinal",         "gold": "one",     "copper": "two",   "ruby": "three",  "amethyst": "four",    "sapphire": "five",   "emerald": "six"}
+    }
+  },
+
+  "rings": {
+    "_comment": "One ring per face, and the ring shown is the one belonging to the face currently on TOP. These are compositions, not icons repeated round a circle (owner 2026-08-07: 'ne bezveze slicice listova nego napredni vizuelno lepi'). `radius` is a multiple of the cube's edge, measured from the cube centre — the owner's sketches put the ring well clear of the cube, never hugging it.",
+    "radius": 0.92,
+    "perFace": {
+      "emerald":  {"kind": "laurel",   "label": "Laurel wreath"},
+      "sapphire": {"kind": "water",    "label": "Water"},
+      "copper":   {"kind": "fire",     "label": "Fire"},
+      "ruby":     {"kind": "electric", "label": "Electric arc"},
+      "gold":     {"kind": "corona",   "label": "Solar corona"},
+      "amethyst": {"kind": "phases",   "label": "Lunar phases"}
+    }
+  },
+
+  "sky": {
+    "_comment": "The sun and the moon are real bodies riding a circle around the cube, not merely a light direction (owner 2026-08-07). Upper half of the circle is the sun's, lower half the moon's: 06:00 left, 12:00 at the zenith, 18:00 right, 00:00 at the bottom. A full moon really does light the cube — from below, so it is the lower faces that catch it — and its strength follows the phase.",
+    "bodyRadius": 0.42,
+    "sunriseHour": 6,
+    "sunsetHour": 18,
+    "sun":  {"ambient": 0.40, "power": 0.95, "horizonColor": "#FFB454", "zenithColor": "#FFF6E0"},
+    "moon": {"ambient": 0.28, "power": 0.55, "horizonColor": "#7E93C8", "zenithColor": "#CBDCFF"},
+    "synodicMonthDays": 29.530588853,
+    "knownNewMoonUtc": "2000-01-06T18:14:00Z",
+    "dayGradient":   ["#BFE6FB", "#8FCDF2"],
+    "nightGradient": ["#2A2E38", "#14161C"]
+  },
+
+  "defaults": {
+    "_comment": "What a consumer gets when it passes nothing. ONLY the spinning colour cube is core; everything else is opt-in (owner 2026-08-07).",
+    "size": 160,
+    "palette": "gems",
+    "finish": "enamel",
+    "emblems": "elements",
+    "ring": false,
+    "sky": false,
+    "background": "transparent",
+    "backgrounds": ["transparent", "dark", "light", "sky"]
+  }
+}

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tumbler — playground</title>
+<style>
+/* One fixed dark scheme, background and text both stated here — never
+   inherited from a host (root rules/PLAN.md, Communication). */
+:root{
+  --ink:#07080C; --panel:#10121A; --panel-2:#171A25; --line:#252A38;
+  --gold:#C9A227; --gold-lit:#F2DC9B; --ivory:#ECE6D8; --muted:#8B92A4; --ok:#2FC08E;
+  --f-display:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --f-body:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;
+  --f-mono:"Cascadia Mono",Consolas,ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ink);color:var(--ivory);font-family:var(--f-body);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:32px 28px 96px}
+h1{font-family:var(--f-display);font-size:clamp(30px,5vw,50px);margin:0;letter-spacing:-.02em}
+h2{font-family:var(--f-display);font-size:26px;margin:0 0 6px}
+h3{font-family:var(--f-display);font-size:18px;margin:0}
+p{margin:0 0 1em;color:#C2C7D4}
+.eyebrow{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.22em;
+  text-transform:uppercase;color:var(--gold);margin:0 0 8px}
+.lede{font-size:18px;max-width:66ch}
+code,pre{font-family:var(--f-mono)}
+header{padding:20px 0 40px;border-bottom:1px solid var(--line);margin-bottom:40px}
+section{padding:44px 0;border-top:1px solid var(--line)}
+section:first-of-type{border-top:0;padding-top:0}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+.grid{display:grid;gap:20px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.split{display:grid;grid-template-columns:360px minmax(0,1fr);gap:26px;align-items:start}
+
+label.fld{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 6px}
+select,input[type=range]{width:100%}
+select{font-family:var(--f-mono);font-size:12.5px;background:var(--panel-2);
+  color:var(--ivory);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+input[type=range]{accent-color:var(--gold)}
+button{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  background:var(--panel-2);color:var(--ivory);border:1px solid var(--line);
+  border-radius:8px;padding:8px 14px;cursor:pointer}
+button:hover{border-color:rgba(201,162,39,.5);color:var(--gold-lit)}
+button[aria-pressed=true]{background:#241F12;border-color:var(--gold);color:var(--gold-lit)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+.viewer{background:#05060A;border:1px solid var(--line);border-radius:14px;
+  min-height:520px;display:grid;place-items:center;overflow:hidden}
+.viewer.checker{background-color:#1B1E27;background-image:
+  linear-gradient(45deg,#22262F 25%,transparent 25%,transparent 75%,#22262F 75%),
+  linear-gradient(45deg,#22262F 25%,transparent 25%,transparent 75%,#22262F 75%);
+  background-size:20px 20px;background-position:0 0,10px 10px}
+.readout{font-family:var(--f-mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--muted);text-align:center;margin-top:12px}
+.readout b{color:var(--gold-lit)}
+pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:10px;
+  padding:16px;color:var(--gold-lit);font-size:12.5px;overflow-x:auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;
+  display:flex;flex-direction:column;gap:10px;align-items:center}
+.card .cell{background:#05060A;border:1px solid var(--line);border-radius:10px;
+  width:100%;display:grid;place-items:center;overflow:hidden}
+.card small{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);text-align:center}
+.perf{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+.perf b{color:var(--ok);font-variant-numeric:tabular-nums}
+@media (max-width:960px){.split{grid-template-columns:1fr}.g3{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.wrap{padding:20px 16px 64px}.g2,.g3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Tumbler · loading cube · playground</p>
+  <h1>Izaberi svoju verziju</h1>
+  <p class="lede">Osnovno je samo kocka koja se okreće kroz šest boja. Sve ostalo — amblemi,
+    prsten, sunce i mesec, pozadina — bira onaj ko paket ugrađuje. Ovde probaj kombinaciju,
+    pa prepiši poziv u svoj kod.</p>
+</header>
+
+<section>
+  <div class="split">
+    <div>
+      <div class="panel">
+        <div class="grid g2" style="gap:14px">
+          <div><label class="fld" for="c-palette">Paleta</label><select id="c-palette"></select></div>
+          <div><label class="fld" for="c-finish">Dezen</label><select id="c-finish"></select></div>
+          <div><label class="fld" for="c-emblems">Amblemi</label><select id="c-emblems"></select></div>
+          <div><label class="fld" for="c-ring">Prsten</label><select id="c-ring"></select></div>
+          <div><label class="fld" for="c-sky">Sunce i mesec</label><select id="c-sky"></select></div>
+          <div><label class="fld" for="c-bg">Pozadina</label><select id="c-bg"></select></div>
+          <div><label class="fld" for="c-mode">Niz</label><select id="c-mode"></select></div>
+          <div><label class="fld" for="c-size">Veličina <span id="size-label" class="mono">160</span> px</label>
+            <input type="range" id="c-size" min="80" max="260" step="4" value="160"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <label class="fld" for="c-hour">Doba dana — <span id="hour-label" style="color:var(--gold-lit)">12:00</span>
+          <span id="phase-label" style="color:var(--muted)"></span></label>
+        <input type="range" id="c-hour" min="0" max="23.9" step="0.1" value="12">
+        <div class="row" style="margin-top:14px">
+          <button id="b-now">Sada</button>
+          <button id="b-cycle" aria-pressed="false">Pusti 24 h</button>
+          <button id="b-play" aria-pressed="true">Pauza</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <label class="fld">Poziv u tvom kodu</label>
+        <pre class="code" id="snippet"></pre>
+      </div>
+
+      <div class="panel" style="margin-top:16px">
+        <label class="fld">Merenje uživo</label>
+        <div class="perf">
+          <span>naš posao <b id="p-work">—</b> ms/kadar</span>
+          <span>kadar <b id="p-frame">—</b> ms</span>
+          <span>udeo <b id="p-share">—</b> %</span>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="viewer" id="viewer"></div>
+      <div class="readout" id="readout">—</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>Šest prstenova</h2>
+  <p>Prsten je onaj koji pripada strani koja je gore — ako je gore zelena, vrti se lovorov venac.</p>
+  <div class="grid g3" id="ring-gallery"></div>
+</section>
+
+<section>
+  <h2>Devet dezena</h2>
+  <p>Nijedan nije slika: sve su gradijenti i računati šum, pa prate paletu i ostaju oštri na svakoj veličini.</p>
+  <div class="grid g3" id="finish-gallery"></div>
+</section>
+
+</div>
+
+<script type="module">
+import Tumbler, { SPEC, FACES } from "../src/tumbler.js";
+import { buildRing } from "../src/rings.js";
+import { FINISHES, FINISH_RADIUS } from "../src/textures.js";
+import { skyAt, moonPhase, moonIllumination, hoursOf } from "../src/sky.js";
+
+const SR = {gold:"Žuta", copper:"Narandžasta", ruby:"Crvena",
+            amethyst:"Ljubičasta", sapphire:"Plava", emerald:"Zelena"};
+const $ = id => document.getElementById(id);
+
+const state = {
+  palette:"gems", finish:"enamel", emblems:"elements",
+  ring:true, sky:true, background:"transparent", mode:"continuous", size:160
+};
+let hour = 12, cycling = false, playing = true;
+
+function fill(sel, entries, value){
+  sel.innerHTML = entries.map(([v,l]) =>
+    `<option value="${v}"${v===value?" selected":""}>${l}</option>`).join("");
+}
+fill($("c-palette"), Object.entries(SPEC.palettes).map(([k,v]) => [k, v.label]), state.palette);
+fill($("c-finish"),  Object.entries(SPEC.finishes).map(([k,v]) => [k, v.label]), state.finish);
+fill($("c-emblems"), Object.entries(SPEC.emblems.families).map(([k,v]) => [k, v.label])
+                       .concat([["none","bez amblema"]]), state.emblems);
+fill($("c-ring"),    [["true","prsten po strani"],["false","bez prstena"]], String(state.ring));
+fill($("c-sky"),     [["true","sunce i mesec"],["false","bez, ravnomerno"]], String(state.sky));
+fill($("c-bg"),      SPEC.defaults.backgrounds.map(b => [b, {
+                       transparent:"providna", dark:"tamna", light:"svetla", sky:"nebo po satu"}[b]]),
+                     state.background);
+fill($("c-mode"),    [["continuous","neprekidno kroz svih 6"],["per-show","jedna strana po pojavi"]], state.mode);
+
+let cube = null;
+function build(){
+  const viewer = $("viewer");
+  viewer.classList.toggle("checker", state.background === "transparent");
+  if (cube) cube.destroy();
+  cube = Tumbler.mount(viewer, {
+    ...state,
+    clock: () => hour,
+    autoplay: playing
+  });
+  if (!playing) cube.pause();
+  $("snippet").textContent =
+    `import Tumbler from "tumbler/src/tumbler.js";\n\n` +
+    `Tumbler.mount("#splash", {\n` +
+    `  size:       ${state.size},\n` +
+    `  palette:    ${JSON.stringify(state.palette)},\n` +
+    `  finish:     ${JSON.stringify(state.finish)},\n` +
+    `  emblems:    ${JSON.stringify(state.emblems)},\n` +
+    `  ring:       ${state.ring},\n` +
+    `  sky:        ${state.sky},\n` +
+    `  background: ${JSON.stringify(state.background)},\n` +
+    `  mode:       ${JSON.stringify(state.mode)}\n});`;
+}
+
+const bind = (id, key, cast = v => v) => $(id).addEventListener("change", e => {
+  state[key] = cast(e.target.value); build();
+});
+bind("c-palette","palette"); bind("c-finish","finish"); bind("c-emblems","emblems");
+bind("c-bg","background"); bind("c-mode","mode");
+bind("c-ring","ring", v => v === "true"); bind("c-sky","sky", v => v === "true");
+$("c-size").addEventListener("input", e => {
+  state.size = parseInt(e.target.value, 10);
+  $("size-label").textContent = state.size;
+  build();
+});
+
+const fmt = h => `${String(Math.floor(h)).padStart(2,"0")}:${String(Math.floor((h%1)*60)).padStart(2,"0")}`;
+function paintClock(){
+  const s = skyAt(hour);
+  $("hour-label").textContent = fmt(hour);
+  const p = moonPhase();
+  $("phase-label").textContent =
+    ` · ${s.isDay ? "sunce" : "mesec"} · mesečeva mena ${(p*100).toFixed(0)}% ciklusa, ` +
+    `osvetljen ${(moonIllumination(p)*100).toFixed(0)}%`;
+  const top = cube && cube.lastTop;
+  $("readout").textContent = top
+    ? `gore: ${SR[top].toUpperCase()} · prsten: ${SPEC.rings.perFace[top].label}`
+    : "—";
+}
+$("c-hour").addEventListener("input", e => { hour = parseFloat(e.target.value); paintClock(); });
+$("b-now").addEventListener("click", () => {
+  hour = hoursOf(); $("c-hour").value = hour;
+  cycling = false; $("b-cycle").setAttribute("aria-pressed","false"); paintClock();
+});
+$("b-cycle").addEventListener("click", e => {
+  cycling = !cycling; e.target.setAttribute("aria-pressed", String(cycling));
+});
+$("b-play").addEventListener("click", e => {
+  playing = !playing;
+  e.target.textContent = playing ? "Pauza" : "Pusti";
+  e.target.setAttribute("aria-pressed", String(playing));
+  playing ? cube.play() : cube.pause();
+});
+setInterval(() => {
+  if (cycling && playing){ hour = (hour + 0.1) % 24; $("c-hour").value = hour; }
+  paintClock();
+}, 60);
+
+// ── galleries ────────────────────────────────────────────────────────────
+{
+  const g = $("ring-gallery");
+  for (const face of SPEC.sequence.tops){
+    const ring = SPEC.rings.perFace[face];
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `<h3>${ring.label}</h3>`;
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.style.aspectRatio = "1/1";
+    cell.appendChild(buildRing(ring.kind, SPEC.palettes.gems[face].lit, 230));
+    cell.firstChild.style.position = "relative";
+    card.appendChild(cell);
+    const s = document.createElement("small");
+    s.textContent = `${SR[face]} gore`;
+    card.appendChild(s);
+    g.appendChild(card);
+  }
+}
+{
+  const g = $("finish-gallery");
+  const demoFace = {matte:"sapphire", velvet:"amethyst", leather:"copper",
+                    leatherdeep:"sapphire", aquarel:"emerald", damask:"emerald",
+                    frame:"emerald", enamel:"ruby", obsidian:"gold"};
+  const demoPal = {velvet:"velvet", damask:"velvet", frame:"velvet",
+                   aquarel:"velvet", leatherdeep:"velvet", obsidian:"obsidian"};
+  for (const [key, meta] of Object.entries(SPEC.finishes)){
+    const colours = SPEC.palettes[demoPal[key] || "gems"][demoFace[key]];
+    const card = document.createElement("div");
+    card.className = "card";
+    const tile = document.createElement("div");
+    tile.style.width = "100%";
+    tile.style.aspectRatio = "16/10";
+    tile.style.borderRadius = "10px";
+    Object.assign(tile.style, FINISHES[key](colours));
+    card.appendChild(tile);
+    const h = document.createElement("h3"); h.textContent = meta.label; card.appendChild(h);
+    g.appendChild(card);
+  }
+}
+
+// ── the live cost meter ──────────────────────────────────────────────────
+let acc = 0, work = 0, n = 0, last = performance.now();
+(function meter(now){
+  const t0 = performance.now();
+  acc += now - last; last = now; n++;
+  work += performance.now() - t0;
+  if (n >= 30){
+    const frame = acc / n;
+    // Everything Tumbler does happens inside its own rAF, so this samples the
+    // gap this page leaves behind: the honest number is the share of a frame.
+    $("p-frame").textContent = frame.toFixed(1);
+    $("p-work").textContent = (work / n).toFixed(3);
+    $("p-share").textContent = ((work / n) / Math.max(frame, .01) * 100).toFixed(1);
+    acc = 0; work = 0; n = 0;
+  }
+  requestAnimationFrame(meter);
+})(performance.now());
+
+build();
+paintClock();
+</script>
+</body>
+</html>
