@@ -4,3 +4,7 @@ __pycache__/
 .pytest_cache/
 node_modules/
 .DS_Store
+
+# Session evidence, not product: a proof file names the commit it graded, so
+# committing it would move HEAD past the very commit it points at.
+.claude/visual-proof.json
