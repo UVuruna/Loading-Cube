@@ -398,7 +398,13 @@ class LoadingCubeInstance {
     this._build();
     if (carried) {
       this.rotation = carried;
-      this._paint(this.rotation.display);
+      // _build already skinned the ring from a FRESH rotation, which stands at
+      // the sequence's first face — so a cube that had tumbled on to copper
+      // showed gold's ring for exactly one frame before healing. Put the carried
+      // face back before anything paints.
+      this.ringFace = null;
+      this._onTopChanged(carried.top);
+      this._paint(carried.display);
     }
   }
 

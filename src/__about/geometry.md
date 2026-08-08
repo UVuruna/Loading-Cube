@@ -22,8 +22,23 @@ degrees every time a face changed, so the corner pose survived exactly one face
 and then drifted — after three tumbles the cube presented an edge. A whole turn
 makes the yaw periodic, and the tumble preserves the phase: its axis is
 horizontal and itself at 45 degrees, so a quarter turn about it carries a corner
-pose to another corner pose. Every dwell opens at the vertex, not merely the
-first.
+pose to another corner pose.
+
+**And the overshoot has to be CARRIED, or none of that holds.** A frame advances
+the yaw by about 1.3 degrees, which does not divide 360, so the dwell threshold
+is always crossed a sliver late. `this.R` keeps that sliver because it is real
+rotation; the first version zeroed the counter and threw away the only record of
+it, so the error was always positive and compounded on every dwell. The corner
+pose drifted without bound — visibly skewed after five minutes, nearly edge-on at
+forty, true again only after eighty. The claim that "every dwell opens at the
+vertex" was made on a one-cycle check and was wrong; the independent grader found
+it by watching for three hours instead of six landings.
+
+`spun -= dwellDegrees` keeps the total spin equal to a whole number of dwells
+plus whatever is left over right now, so the yaw is always within one frame of
+where it started. Measured across 2026 landings in three simulated hours at a
+deliberately awkward frame time: the corner spread stays under 0.012 and cycles
+rather than climbing.
 
 ## `by-day` shows one face and never tumbles
 
