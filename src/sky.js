@@ -98,34 +98,77 @@ export function skyAt(hour, options = {}) {
   };
 }
 
-/** The page background for `background: "sky"`, blended across dawn and dusk. */
+/**
+ * How much of the sky is DAY right now: 1 in full daylight, 0 in full night,
+ * and a smooth ramp centred on sunrise and on sunset.
+ *
+ * This is the one number the backdrop needs — clouds fade in with it, stars
+ * fade out with it, and the ground colour is a straight mix on it — so it is
+ * computed here, where the sun and the moon already live, rather than twice.
+ *
+ * Centred, not clamped at the boundary: the old version jumped straight to 0.25
+ * at sunrise, which read as the sky switching on. `blendHours` is half above and
+ * half below each boundary, so 06:00 with a 1.5-hour blend is exactly half lit
+ * and the last star goes out at 06:45.
+ */
+export function daylight(sky, blend = SPEC.backdrop.blendHours) {
+  const s = SPEC.sky;
+  const rise = s.sunriseHour, set = s.sunsetHour;
+  const dayLength = set - rise;
+  const sinceRise = (((sky.hour - rise) % 24) + 24) % 24;
+  // Hours to the NEAREST boundary — positive inside the day, negative at night.
+  const edge = sinceRise <= dayLength
+    ? Math.min(sinceRise, dayLength - sinceRise)
+    : -Math.min(sinceRise - dayLength, 24 - sinceRise);
+  return Math.max(0, Math.min(1, 0.5 + edge / blend));
+}
+
+/** The sky's own ground colour right now, day and night gradients blended. */
 export function skyBackground(sky) {
   const s = SPEC.sky;
   const [d0, d1] = s.dayGradient;
   const [n0, n1] = s.nightGradient;
-  // altitude does the fading by itself: it is 0 at both horizons
-  const daylight = sky.isDay ? Math.min(1, 0.25 + sky.altitude) : 0;
-  const top = mixHex(n0, d0, daylight);
-  const bottom = mixHex(n1, d1, daylight);
-  return `linear-gradient(180deg, ${top}, ${bottom})`;
+  const lit = daylight(sky);
+  return `linear-gradient(180deg, ${mixHex(n0, d0, lit)}, ${mixHex(n1, d1, lit)})`;
 }
 
 /**
- * Place the body on its orbit. `box` is the square the cube sits in; the
- * radius comes from the spec so the sun clears the ring as the ring clears
- * the cube.
+ * Place the body ON THE FRAME (owner 2026-08-08: "sunce/mesec TREBA da ide po
+ * ivicama ekrana ... uvek hvata ivicu u tom uglu").
+ *
+ * The old version put the body on a CIRCLE of radius 0.44 x box, and a circle
+ * knows nothing about the shape it sits in: along a diagonal it stopped well
+ * short of the corner, which is exactly the "barely visible behind the cube"
+ * the owner photographed. What is wanted is the rectangle's PERIMETER — at noon
+ * the top edge, at 15:00 the corner, at 18:00 the right edge — so the body is
+ * always as far out as the frame allows in whatever direction the hour points.
+ *
+ * That is a ray-rectangle intersection and it is one line of arithmetic: for a
+ * unit direction (dx, dy) the ray leaves a half-width/half-height box at
+ * t = min(halfW/|dx|, halfH/|dy|), whichever wall it reaches first. The box is
+ * shrunk by half the body plus a margin BEFORE the intersection, so what lands
+ * on the edge is the disc's rim and not its centre — an unshrunk box put half
+ * the sun outside, where the root's overflow:hidden sliced it off.
+ *
+ * `width` and `height` are the frame's, not the cube's: with `sky` on the root
+ * fills its host and the host may be any shape, so a wide window really does
+ * carry the sun further out sideways than up.
  */
-export function bodyPosition(sky, box, bodySize = 0, radiusFactor = SPEC.sky.bodyRadius) {
+export function bodyPosition(sky, width, height, bodySize = 0,
+                             margin = SPEC.sky.bodyMarginPx) {
   const rad = (sky.angle * Math.PI) / 180;
-  // The orbit is pulled in so the DISC fits, not just its centre: at the
-  // zenith an unclamped radius pushed the sun's upper half out of the frame,
-  // where the root's overflow:hidden sliced it off.
-  const fits = box / 2 - bodySize / 2 - 4;
-  const r = Math.min(box * radiusFactor, Math.max(0, fits));
-  return {
-    x: box / 2 + r * Math.cos(rad),
-    y: box / 2 - r * Math.sin(rad)   // screen y grows downward
-  };
+  const dx = Math.cos(rad);
+  const dy = -Math.sin(rad);              // screen y grows downward
+  const halfW = Math.max(0, width / 2 - bodySize / 2 - margin);
+  const halfH = Math.max(0, height / 2 - bodySize / 2 - margin);
+
+  // A direction exactly along an axis has one zero component; Infinity is the
+  // right answer for that wall (it is never reached) and `min` discards it.
+  const tx = Math.abs(dx) < 1e-9 ? Infinity : halfW / Math.abs(dx);
+  const ty = Math.abs(dy) < 1e-9 ? Infinity : halfH / Math.abs(dy);
+  const t = Math.min(tx, ty);
+
+  return {x: width / 2 + dx * t, y: height / 2 + dy * t};
 }
 
 /** Hours since midnight, as a float, from a Date. */
