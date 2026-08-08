@@ -88,8 +88,20 @@ export function axisAngle(axis, theta) {
 export const toCss = m =>
   `matrix3d(${m[0]},${m[3]},${m[6]},0,${m[1]},${m[4]},${m[7]},0,${m[2]},${m[5]},${m[8]},0,0,0,0,1)`;
 
-/** The fixed viewing tilt, so the cube reads as a solid and not a flat square. */
+/**
+ * The fixed viewing tilt, so the cube reads as a solid and not a flat square.
+ *
+ * The angle is the TRUE isometric one — atan(1/sqrt(2)) ≈ 35.264 degrees,
+ * negated because +y points down. Paired with a 45-degree yaw it puts a VERTEX
+ * of the cube at the centre of the frame and foreshortens all three visible
+ * faces equally, which is the pose the owner's sketch shows and the pose the
+ * animation must open in (owner 2026-08-08). At the old -20 degrees the top
+ * face was merely tipped and no yaw could produce a true corner view.
+ */
 export const TILT = axisAngle([1, 0, 0], (SPEC.timing.viewTiltDegrees * Math.PI) / 180);
+
+/** The opening yaw about the vertical, in radians — the other half of isometric. */
+const START_YAW = (SPEC.timing.startYawDegrees * Math.PI) / 180;
 
 /**
  * The rotation that carries `face` to the top from the current orientation.
@@ -129,11 +141,31 @@ const easeInOutCubic = p =>
   p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
 
 /**
+ * Which single face `by-day` mode shows, for a given date.
+ *
+ * The owner's mapping (2026-08-08) is indexed by the weekday exactly as
+ * `Date#getDay()` reports it, Sunday first — and Sunday is the one entry that
+ * names no face at all but the string `"mono"`, because Sunday is the
+ * monochrome cube. Callers that get `"mono"` back must choose a palette, not a
+ * face; the face they show is the first of the sequence.
+ */
+export const faceOfDay = (date = new Date()) =>
+  SPEC.sequence.weekdays[date.getDay()];
+
+/**
  * The driver. Two phases forever: SPIN about the vertical axis (showing the
  * four sides of whichever face is up), then TUMBLE to bring the next face up.
  * The spin is frozen during a tumble — letting both run would mean the face
  * never lands where the tumble aimed it, because the target is computed once
  * at the start of the turn.
+ *
+ * WHY THE DWELL IS A WHOLE TURN. At 320 degrees the yaw advanced 40 degrees
+ * every time a face changed, so the opening isometric pose survived exactly one
+ * face and then drifted — after three tumbles the cube presented an edge, not a
+ * corner. A full 360 makes the yaw periodic, and the tumble itself preserves
+ * the phase (its axis is horizontal and at 45 degrees, so a quarter turn about
+ * it carries a corner pose to another corner pose). The result is that EVERY
+ * dwell, not merely the first, begins at the vertex.
  */
 export class Rotation {
   constructor(options = {}) {
@@ -142,15 +174,18 @@ export class Rotation {
     this.spinSpeed = options.spinSpeed ?? t.spinSpeed;
     this.dwellDegrees = options.dwellDegrees ?? t.dwellDegrees;
     this.tumbleSeconds = options.tumbleSeconds ?? t.tumbleSeconds;
-    // `per-show` stops after the first face: one loading, one colour on top.
-    this.once = options.mode === "per-show";
+    // Both `per-show` and `by-day` show ONE face and never tumble: the first
+    // means one colour per appearance, the second one colour per weekday.
+    this.once = options.mode === "per-show" || options.mode === "by-day";
 
     this.index = 0;
     this.mode = "spin";
     this.spun = 0;
     this.elapsed = 0;
     this.base = identity();
-    this.R = tumbleTo(identity(), this.sequence[0]).R;
+    // Yaw FIRST, in world space, exactly as `step` does it — so the opening
+    // matrix is a pose the spin itself will return to every whole turn.
+    this.R = mul(axisAngle(UP, START_YAW), tumbleTo(identity(), this.sequence[0]).R);
     this.display = this.R;
     this.axis = [1, 0, 0];
     this.angle = 0;
