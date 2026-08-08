@@ -44,6 +44,7 @@ TIERS: dict[str, str] = {
     "src/emblems.js":  STANDARD,
     "src/rings.js":    ALGORITHMIC,
     "src/sky.js":      ALGORITHMIC,
+    "src/backdrop.js": STANDARD,
     "src/styles.js":   STANDARD,
     "src/loading-cube.js":  ALGORITHMIC,
 }
@@ -162,9 +163,9 @@ def test_no_orphaned_about_or_flow_doc():
 
 
 def test_the_guard_is_actually_looking_at_this_project():
-    # Nine source files, not thirty: Loading Cube is one component, not a suite.
+    # Ten source files, not thirty: Loading Cube is one component, not a suite.
     # The number still has to be REAL — a TIERS dict that silently emptied
     # would pass every other test in this file.
-    assert len(TIERS) >= 9, len(TIERS)
+    assert len(TIERS) >= 10, len(TIERS)
     seen_suffixes = {Path(rel).suffix for rel in TIERS}
     assert seen_suffixes == {".py", ".js"}, seen_suffixes

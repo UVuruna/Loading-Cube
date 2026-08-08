@@ -17,27 +17,84 @@ const STYLE_ID = "loading-cube-styles";
 
 const CSS = `
 .lc-root{position:relative;display:grid;place-items:center;overflow:hidden;
-  border-radius:inherit;--lc-spin:26s}
-.lc-root.lc-bg-transparent{background:transparent}
-.lc-root.lc-bg-dark{background:#05060A}
-.lc-root.lc-bg-light{background:#E8E4DA}
+  border-radius:inherit;--lc-spin:26s;--lc-drift:90s}
 
-.lc-stage{position:relative;display:grid;place-items:center;transform-style:preserve-3d}
+/* WITH SKY ON, THE ROOT IS THE FRAME (owner 2026-08-08). The sun and the moon
+   ride the frame's edge, so "the frame" has to be something the embedder chose:
+   the root fills its host and the cube keeps its own size in the middle. A root
+   that sized itself to the cube left the sun a few pixels of travel, which is
+   the whole reason it looked stuck behind the cube. */
+.lc-root.lc-fill{width:100%;height:100%}
+
+/* The fit layer holds everything that must stay concentric — the ring and the
+   cube — so ONE transform shrinks the whole composition when the host is
+   smaller than it wants to be. The sun and the moon sit outside it: they ride
+   the real frame and must not shrink with the cube.
+   IN FLOW, not absolute, and carrying the cube's own box as its width and
+   height: that is what gives a filling root an intrinsic size, so a host with no
+   stated height still shows something instead of collapsing to nothing. A
+   transform does not affect layout, so scaling it down never changes that. */
+.lc-fit{position:relative;display:grid;place-items:center;transform-origin:50% 50%}
+
+/* ── backdrops ────────────────────────────────────────────────────────
+   Every layer is absolute and behind the stage; the cube's own z-index puts it
+   in front without either one needing to know the other's size. */
+.lc-scene,.lc-ground-day,.lc-ground-night{position:absolute;inset:0;
+  pointer-events:none;z-index:0}
+.lc-ground-day{background:linear-gradient(180deg,#8FCDF2,#DCEEF8)}
+.lc-ground-night{background:linear-gradient(180deg,#0B0E1A,#2A3145)}
+
+/* A cloud band is TWICE the frame wide and slides exactly half its own width,
+   so the pixels it wraps onto are the pixels it left. */
+.lc-cloud{position:absolute;left:0;width:200%;pointer-events:none;z-index:0;
+  animation:lc-drift var(--lc-drift) linear infinite}
+@keyframes lc-drift{from{transform:translate3d(0,0,0)}to{transform:translate3d(-50%,0,0)}}
+
+/* One element for a whole sky: a REPEATING tile of computed dots, so the field
+   covers any frame at any aspect ratio without ever being measured. */
+.lc-stars{position:absolute;inset:0;pointer-events:none;z-index:0}
+
+/* The day-cycle backdrop cross-fades the night scene over the day one — opacity
+   only, so the whole transition stays on the compositor.
+   (No backticks anywhere below this line: the whole stylesheet is one template
+   literal, and a backtick in a CSS comment ends it — which is exactly how this
+   file broke the first time it was run.) */
+.lc-fade{transition:opacity .9s linear}
+
+/* Painting order, stated once: backdrop 0, ring 1, sun/moon 2, cube 3. The cube
+   is the subject, so nothing ever covers it; the body passes in FRONT of the
+   ring, which is what the owner's morning/evening sketches show. */
+.lc-stage{position:relative;display:grid;place-items:center;
+  transform-style:preserve-3d;z-index:3}
 .lc-cube{position:relative;transform-style:preserve-3d;will-change:transform}
 .lc-face{position:absolute;inset:0;display:grid;place-items:center;
   backface-visibility:hidden;overflow:hidden}
 .lc-emblem{width:44%;height:44%;opacity:.85;position:relative;z-index:1}
 .lc-shade,.lc-lit{position:absolute;inset:0;pointer-events:none;z-index:2}
 
-/* the sun or the moon, riding its orbit */
-.lc-body{position:absolute;pointer-events:none;user-select:none;z-index:0;
+/* ── the core that closes the vertices ───────────────────────────────
+   Six rounded faces meeting at 90 degrees leave a triangular notch at each of
+   the eight vertices. The core is a SHARP cube of the SAME edge, and the
+   rounded shell is pushed 0.6px outside it (--lc-zoff), so every notch looks
+   onto the core instead of onto the page. A merely SCALED inner cube cannot do
+   this: the notch sits at the outermost point of the silhouette, so an inner
+   cube at 94% leaves the last 6% open — a light sliver, which is the defect
+   with extra steps.
+   The 0.6px offset itself is applied in JS (loading-cube.js SHELL_OFFSET_PX),
+   because the same number has to move the face's translateZ and grow its inset
+   by the same amount — one constant, not two that can drift. */
+.lc-core{position:absolute;inset:0;transform-style:preserve-3d}
+.lc-core .lc-face{border-radius:0;box-shadow:none}
+
+/* the sun or the moon, riding the frame's edge */
+.lc-body{position:absolute;pointer-events:none;user-select:none;z-index:2;
   filter:drop-shadow(0 0 14px rgba(255,255,255,.18))}
 
-/* ── rings ────────────────────────────────────────────────────────────
+/* ── rings ────────────────────────────────────────────────────────
    Each layer is a DIV so its transform-origin is its own centre. An SVG <g>
    needs transform-box, and getting that wrong makes the ring orbit the page
    instead of spinning in place. */
-.lc-ring{position:absolute;pointer-events:none;z-index:0}
+.lc-ring{position:absolute;pointer-events:none;z-index:1}
 .lc-ring-layer{position:absolute;inset:0}
 .lc-ring-layer svg{width:100%;height:100%;display:block}
 
@@ -57,6 +114,7 @@ const CSS = `
 .lc-chase    {animation:lc-chase 2.2s linear infinite}
 
 .lc-root.lc-paused .lc-ring-layer,
+.lc-root.lc-paused .lc-cloud,
 .lc-root.lc-paused .lc-flicker,
 .lc-root.lc-paused .lc-twinkle,
 .lc-root.lc-paused .lc-chase{animation-play-state:paused}
@@ -64,7 +122,7 @@ const CSS = `
 /* A loading indicator that stands still is a broken loading indicator, so
    reduced motion SLOWS the ornament rather than freezing it. */
 @media (prefers-reduced-motion: reduce){
-  .lc-root{--lc-spin:78s}
+  .lc-root{--lc-spin:78s;--lc-drift:300s}
   .lc-flicker,.lc-twinkle,.lc-chase{animation:none;opacity:.8}
   .lc-breathe{animation-duration:14s}
 }
