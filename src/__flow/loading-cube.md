@@ -4,20 +4,26 @@
 
 ```mermaid
 flowchart TD
-    A[mount with target and options] --> B[merge over SPEC.defaults]
-    B --> C[derive box: cube, then ring room, then sky room]
+    A[mount with target and options] --> A2[resolve palette: weekday, then paletteMode]
+    A2 --> B[merge over SPEC.defaults]
+    B --> C[derive box: cube, then ring room]
     C --> D[ensureStyles once per document]
-    D --> E[build root, optional body image, optional ring host, stage, six faces]
-    E --> F[each face: finish style + emblem + shade layer + lit layer]
-    F --> G[register in the shared instance set]
+    D --> D2[build backdrop for the chosen background]
+    D2 --> E[root, optional body image, fit layer, optional ring host, stage]
+    E --> E2{corners variant wants a core?}
+    E2 -->|yes| E3[six sharp core faces first, no emblem, no lighting]
+    E2 -->|no| F
+    E3 --> F[each shell face: finish style + emblem + shade layer + lit layer]
+    F --> F2[measure the frame: body size and fit scale]
+    F2 --> G[register in the shared instance set]
     G --> H{loop already running?}
     H -->|no| I[start requestAnimationFrame]
     I --> J[frame]
     H -->|yes| J
     J --> K[for each running instance: rotation step, then paint]
     K --> L{sky on?}
-    L -->|yes| M[shade six faces, move the body, maybe repaint the background]
-    L -->|no| N[skip]
+    L -->|yes| M[shade six faces, move the body to the frame edge, blend the backdrop]
+    L -->|no| N[blend the backdrop only — the day cycle still follows the clock]
     M --> O{top face changed?}
     N --> O
     O -->|yes| P[swap the ring for the new face's composition]
@@ -30,6 +36,13 @@ flowchart TD
 Six times per cycle, not sixty times per second. Between changes the ring is
 untouched DOM turning on the compositor, which is why switching it on does not
 move the cost meter.
+
+## What the clock touches, and how rarely
+
+Only the day-cycle backdrop, and it compares before it writes: the daylight
+fraction is rounded to two decimals, so a still afternoon writes to the DOM zero
+times. The frame is read on resize, never per frame — see
+[__about/loading-cube.md](../__about/loading-cube.md).
 
 ## destroy() stops the world
 

@@ -30,9 +30,25 @@ light would sit near zero all the time. The `+0.42` z component gives the
 visible faces something to catch while keeping the left/right and up/down
 difference the eye is reading.
 
-## Why the orbit radius is clamped
+## Where the body lands
 
-The body is placed by its CENTRE. At the zenith an unclamped radius pushed the
-sun's upper half outside the root, where `overflow: hidden` sliced it off. The
-radius is therefore the smaller of the spec fraction and "half the box minus
-half the disc".
+```mermaid
+flowchart TD
+    A[angle from the hour] --> B[dx = cos a, dy = minus sin a]
+    B --> C[halfW = width/2 minus half the disc minus margin]
+    B --> D[halfH = height/2 minus half the disc minus margin]
+    C --> E[tx = halfW / abs dx, or Infinity when dx is 0]
+    D --> F[ty = halfH / abs dy, or Infinity when dy is 0]
+    E --> G[t = min of tx and ty: the nearer wall wins]
+    F --> G
+    G --> H[centre + direction times t]
+```
+
+The body is placed by its CENTRE, so the box is shrunk by half the disc plus the
+margin BEFORE the intersection — an unshrunk box put half the sun outside the
+root, where `overflow: hidden` sliced it off.
+
+Which wall wins depends on the frame's shape, and that is the point. In a wide
+16:9 frame the 15:00 diagonal ray reaches the TOP edge first; in a tall 9:16
+frame the same hour reaches the SIDE first. Either way the body touches the
+frame, which is what the owner asked for — the previous circle touched nothing.

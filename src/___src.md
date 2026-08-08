@@ -8,10 +8,11 @@ it is a different KIND of decision.
 |---|---|---|
 | `spec.js` | the values every renderer must agree on — mirror of `../shared/spec.json` | [about](__about/spec.md) |
 | `geometry.js` | rotation maths and the driver that walks the face order | [about](__about/geometry.md) · [flow](__flow/geometry.md) |
-| `textures.js` | the nine finishes, all computed | [about](__about/textures.md) |
+| `textures.js` | the nine finishes and the corner treatment, all computed | [about](__about/textures.md) |
 | `emblems.js` | the glyphs and the six families | [about](__about/emblems.md) |
 | `rings.js` | the six ring compositions | [about](__about/rings.md) · [flow](__flow/rings.md) |
 | `sky.js` | where the sun and moon are, and what they light | [about](__about/sky.md) · [flow](__flow/sky.md) |
+| `backdrop.js` | the six backgrounds — clouds, stars, the day cycle | [about](__about/backdrop.md) |
 | `styles.js` | the one injected stylesheet | [about](__about/styles.md) |
 | `loading-cube.js` | the public API and the shared frame loop | [about](__about/loading-cube.md) · [flow](__flow/loading-cube.md) |
 
@@ -29,3 +30,11 @@ only `textures.js` and `rings.js` — the two files genuinely about CSS and SVG
 `spec.js` imports nothing. Everything else may import `spec.js`. Only
 `loading-cube.js` imports the rest. A cycle here would mean two modules disagree
 about who owns a decision.
+
+One exception, and it earns its place: `backdrop.js` imports `sky.js`. The
+backdrop needs to know how much of the sky is DAY right now, and `sky.js` already
+owns that — it computes the sun's altitude and the horizon-to-zenith colour
+blend. Having the backdrop re-derive daylight from the hour would be two modules
+holding an opinion about one fact, which is the thing this rule exists to
+prevent. The dependency runs one way only: `sky.js` knows nothing about
+backdrops.

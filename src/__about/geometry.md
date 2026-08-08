@@ -9,6 +9,30 @@ viewer — because that is the frame the transform is finally written in.
 Converting at the boundary is where sign errors breed, so "up" is spelled out
 once as `UP = [0, -1, 0]` and never assumed again.
 
+## The opening pose is a VERTEX, never a face
+
+Owner decree 2026-08-08: the animation opens orthographic onto a corner, as in
+his sketch. That is two numbers working together — `viewTiltDegrees` of
+**-35.264**, which is `atan(1/sqrt(2))` negated and therefore the true isometric
+tilt, and `startYawDegrees` of **45**. At the old -20 degrees the top face was
+merely tipped and no yaw could have produced a corner view at all.
+
+`dwellDegrees` had to change with it, 320 to **360**. At 320 the yaw advanced 40
+degrees every time a face changed, so the corner pose survived exactly one face
+and then drifted — after three tumbles the cube presented an edge. A whole turn
+makes the yaw periodic, and the tumble preserves the phase: its axis is
+horizontal and itself at 45 degrees, so a quarter turn about it carries a corner
+pose to another corner pose. Every dwell opens at the vertex, not merely the
+first.
+
+## `by-day` shows one face and never tumbles
+
+`faceOfDay` reads `SPEC.sequence.weekdays` indexed exactly as `Date#getDay()`
+reports it — Sunday first. Sunday's entry names no face at all but the string
+`"mono"`, because Sunday is the monochrome cube; a caller that gets `"mono"` back
+must choose a palette, not a face. `Rotation` treats `by-day` like `per-show`:
+one face, spin only, no tumble.
+
 ## Why matrices
 
 The cube tumbles about a different horizontal axis at every step, and which

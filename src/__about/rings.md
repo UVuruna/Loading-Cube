@@ -26,4 +26,21 @@ CSS animation. Two reasons:
 Inside an SVG only **opacity** is animated (flicker, twinkle), which has no
 origin to get wrong.
 
+## Realistic artwork is coming, and it is not here yet
+
+The owner asked (2026-08-08) for realistic rings written as a PromptPainter
+prompt sheet rather than a third attempt at curves. That sheet is
+`UV/rings-prompts.md` — seven entries, validated against PromptPainter's own
+dry-run — and he generates the images on his own machine. Until a set is
+approved, **these drawn rings stay the shipped artwork** (his words: *"nek se
+vide ove kao i do sada dok ja ne napravim slike"*), so nothing in this module is
+waiting on that file.
+
+`shared/spec.json` already names the file stem each ring's image will take
+(`rings.perFace[*].art`), which is the only preparation that costs nothing. The
+sheet also carries the constraint the artwork must satisfy: the renderer spins a
+ring with CSS, so an image drawn off centre would orbit rather than turn — the
+same defect a mis-set `transform-box` caused live on 2026-08-07, arriving through
+a different door.
+
 Flow: [__flow/rings.md](../__flow/rings.md).
