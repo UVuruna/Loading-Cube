@@ -8,12 +8,16 @@
 // build the moment the two disagree. A copy nobody checks is drift; a copy a
 // guard checks is just a second reader of one truth.
 //
+// The explanations live in shared/spec.json's `_comment` keys — that file is
+// the one a future C#/WPF or Qt renderer opens cold, so the prose belongs
+// there and the parity guard strips those keys before comparing.
+//
 // See src/__about/spec.md.
 "use strict";
 
 // ═══════════ THE SPEC — mirror of shared/spec.json ═══════════
 export const SPEC = {
-  version: 1,
+  version: 2,
 
   axes: {
     gold:     {axis: "+y", position: "top",    opposite: "amethyst"},
@@ -26,15 +30,27 @@ export const SPEC = {
 
   sequence: {
     tops: ["gold", "copper", "ruby", "amethyst", "sapphire", "emerald"],
+    weekdays: ["mono", "sapphire", "copper", "amethyst", "gold", "ruby", "emerald"],
     mode: "continuous",
-    modes: ["continuous", "per-show"]
+    modes: ["continuous", "per-show", "by-day"]
   },
 
   timing: {
     spinSpeed: 78,
-    dwellDegrees: 320,
+    dwellDegrees: 360,
     tumbleSeconds: 0.7,
-    viewTiltDegrees: -20
+    viewTiltDegrees: -35.264,
+    startYawDegrees: 45
+  },
+
+  corners: {
+    default: "soft",
+    variants: {
+      soft:  {label: "Soft bevel", maxRadiusPercent: 5,   core: true,  seam: false},
+      bevel: {label: "Deep bevel", maxRadiusPercent: 100, core: true,  seam: false},
+      sharp: {label: "Sharp",      maxRadiusPercent: 0,   core: false, seam: false},
+      seam:  {label: "Gold seam",  maxRadiusPercent: 0,   core: false, seam: true}
+    }
   },
 
   palettes: {
@@ -64,19 +80,63 @@ export const SPEC = {
       amethyst: {base: "#0D0E14", lit: "#B183EC", deep: "#05060A", emblem: "#B183EC"},
       sapphire: {base: "#0D0E14", lit: "#6E8BFF", deep: "#05060A", emblem: "#6E8BFF"},
       emerald:  {base: "#0D0E14", lit: "#3ED3A0", deep: "#05060A", emblem: "#3ED3A0"}
+    },
+    porcelain: {
+      label: "Ceramic White",
+      gold:     {base: "#ECE7DC", lit: "#FFFFFF", deep: "#B4AD9D", emblem: "#6A6357"},
+      copper:   {base: "#ECE7DC", lit: "#FFFFFF", deep: "#B4AD9D", emblem: "#6A6357"},
+      ruby:     {base: "#ECE7DC", lit: "#FFFFFF", deep: "#B4AD9D", emblem: "#6A6357"},
+      amethyst: {base: "#ECE7DC", lit: "#FFFFFF", deep: "#B4AD9D", emblem: "#6A6357"},
+      sapphire: {base: "#ECE7DC", lit: "#FFFFFF", deep: "#B4AD9D", emblem: "#6A6357"},
+      emerald:  {base: "#ECE7DC", lit: "#FFFFFF", deep: "#B4AD9D", emblem: "#6A6357"}
+    },
+    basalt: {
+      label: "Ceramic Black",
+      gold:     {base: "#23252B", lit: "#4E535E", deep: "#0B0C10", emblem: "#C8CBD2"},
+      copper:   {base: "#23252B", lit: "#4E535E", deep: "#0B0C10", emblem: "#C8CBD2"},
+      ruby:     {base: "#23252B", lit: "#4E535E", deep: "#0B0C10", emblem: "#C8CBD2"},
+      amethyst: {base: "#23252B", lit: "#4E535E", deep: "#0B0C10", emblem: "#C8CBD2"},
+      sapphire: {base: "#23252B", lit: "#4E535E", deep: "#0B0C10", emblem: "#C8CBD2"},
+      emerald:  {base: "#23252B", lit: "#4E535E", deep: "#0B0C10", emblem: "#C8CBD2"}
+    },
+    silver: {
+      label: "Brushed Silver",
+      gold:     {base: "#B9BDC4", lit: "#F2F5F8", deep: "#6E747E", emblem: "#3A3F48"},
+      copper:   {base: "#B9BDC4", lit: "#F2F5F8", deep: "#6E747E", emblem: "#3A3F48"},
+      ruby:     {base: "#B9BDC4", lit: "#F2F5F8", deep: "#6E747E", emblem: "#3A3F48"},
+      amethyst: {base: "#B9BDC4", lit: "#F2F5F8", deep: "#6E747E", emblem: "#3A3F48"},
+      sapphire: {base: "#B9BDC4", lit: "#F2F5F8", deep: "#6E747E", emblem: "#3A3F48"},
+      emerald:  {base: "#B9BDC4", lit: "#F2F5F8", deep: "#6E747E", emblem: "#3A3F48"}
+    },
+    onyx: {
+      label: "Obsidian Black",
+      gold:     {base: "#14161C", lit: "#3E4350", deep: "#05060A", emblem: "#C9CEDA"},
+      copper:   {base: "#14161C", lit: "#3E4350", deep: "#05060A", emblem: "#C9CEDA"},
+      ruby:     {base: "#14161C", lit: "#3E4350", deep: "#05060A", emblem: "#C9CEDA"},
+      amethyst: {base: "#14161C", lit: "#3E4350", deep: "#05060A", emblem: "#C9CEDA"},
+      sapphire: {base: "#14161C", lit: "#3E4350", deep: "#05060A", emblem: "#C9CEDA"},
+      emerald:  {base: "#14161C", lit: "#3E4350", deep: "#05060A", emblem: "#C9CEDA"}
+    }
+  },
+
+  mono: {
+    default: "ceramic",
+    styles: {
+      ceramic: {label: "Ceramic", day: "porcelain", night: "basalt"},
+      metal:   {label: "Metal",   day: "silver",    night: "onyx"}
     }
   },
 
   finishes: {
-    matte:       {label: "Matte enamel"},
-    velvet:      {label: "Velvet"},
-    leather:     {label: "Leather / plaster"},
-    leatherdeep: {label: "Deep leather"},
-    aquarel:     {label: "Watercolour with gold frame"},
-    damask:      {label: "Damask"},
-    frame:       {label: "Gold frame"},
-    enamel:      {label: "Enamel / cloisonne"},
-    obsidian:    {label: "Obsidian"}
+    matte:       {label: "Matte enamel",               radiusPercent: 9},
+    velvet:      {label: "Velvet",                      radiusPercent: 9},
+    leather:     {label: "Leather / plaster",           radiusPercent: 9},
+    leatherdeep: {label: "Deep leather",                radiusPercent: 9},
+    aquarel:     {label: "Watercolour with gold frame", radiusPercent: 6},
+    damask:      {label: "Damask",                      radiusPercent: 6},
+    frame:       {label: "Gold frame",                  radiusPercent: 6},
+    enamel:      {label: "Enamel / cloisonne",          radiusPercent: 11},
+    obsidian:    {label: "Obsidian",                    radiusPercent: 11}
   },
 
   emblems: {
@@ -94,36 +154,56 @@ export const SPEC = {
   rings: {
     radius: 1.15,
     perFace: {
-      emerald:  {kind: "laurel",   label: "Laurel wreath"},
-      sapphire: {kind: "water",    label: "Water"},
-      copper:   {kind: "fire",     label: "Fire"},
-      ruby:     {kind: "electric", label: "Electric arc"},
-      gold:     {kind: "corona",   label: "Solar corona"},
-      amethyst: {kind: "phases",   label: "Lunar phases"}
+      emerald:  {kind: "laurel",   label: "Laurel wreath", art: "Laurel"},
+      sapphire: {kind: "water",    label: "Water",         art: "Water"},
+      copper:   {kind: "fire",     label: "Fire",          art: "Fire"},
+      ruby:     {kind: "electric", label: "Electric arc",  art: "Electric"},
+      gold:     {kind: "corona",   label: "Solar corona",  art: "Corona"},
+      amethyst: {kind: "phases",   label: "Lunar phases",  art: "MoonPhases"}
     }
   },
 
   sky: {
-    bodyRadius: 0.44,
+    bodySizeFactor: 0.17,
+    bodyMarginPx: 6,
     sunriseHour: 6,
     sunsetHour: 18,
-    sun:  {ambient: 0.40, power: 0.95, horizonColor: "#FFB454", zenithColor: "#FFF6E0"},
+    sun:  {ambient: 0.4, power: 0.95, horizonColor: "#FFB454", zenithColor: "#FFF6E0"},
     moon: {ambient: 0.28, power: 0.55, horizonColor: "#7E93C8", zenithColor: "#CBDCFF"},
     synodicMonthDays: 29.530588853,
     knownNewMoonUtc: "2000-01-06T18:14:00Z",
-    dayGradient:   ["#BFE6FB", "#8FCDF2"],
-    nightGradient: ["#2A2E38", "#14161C"]
+    dayGradient:   ["#8FCDF2", "#DCEEF8"],
+    nightGradient: ["#0B0E1A", "#2A3145"],
+    plainDay:   "#A9D6F0",
+    plainNight: "#151925"
+  },
+
+  backdrop: {
+    clouds: [
+      {puffs: 3, opacity: 0.42, driftSeconds: 150, topPercent: 30, heightPercent: 58},
+      {puffs: 4, opacity: 0.88, driftSeconds: 86, topPercent: 4, heightPercent: 56}
+    ],
+    stars: {perTile: 26, tilePx: 300, sizePx: 1.6, twinklePerTile: 5, twinkleTilePx: 430, twinkleSizePx: 2.6},
+    blendHours: 1.5
   },
 
   defaults: {
     size: 160,
     palette: "gems",
+    paletteMode: "fixed",
+    paletteModes: ["fixed", "day-night", "mono"],
+    paletteDay: "gems",
+    paletteNight: "velvet",
+    monoStyle: "ceramic",
     finish: "enamel",
+    corners: "soft",
     emblems: "elements",
     ring: false,
     sky: false,
+    show: "both",
+    shows: ["both", "cube", "ring"],
     background: "transparent",
-    backgrounds: ["transparent", "dark", "light", "sky"]
+    backgrounds: ["transparent", "light", "dark", "day", "night", "cycle"]
   }
 };
 

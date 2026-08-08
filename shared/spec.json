@@ -1,6 +1,6 @@
 {
   "_comment": "THE SPEC — the single source of truth every renderer reads. Web (src/spec.js) mirrors this file exactly and tests/test_spec_parity.py fails the build when the two drift; a future C#/WPF or Qt renderer reads THIS file, never the JS. Only cross-stack facts live here: colours, face order, timing, which rings and emblems exist, the sun/moon rules. Web-only recipes (CSS gradient strings, SVG path data) stay in src/ — they cannot be honoured by a stack that has no CSS.",
-  "version": 1,
+  "version": 2,
 
   "axes": {
     "_comment": "The house axis language, shared with Gadgets/3D Preview (shared/spec.json) and Gadgets/DOMY Watch (SYMBOLISM.md). Colour names are POSITIONAL — the palette decides the hue, never the meaning.",
@@ -13,20 +13,35 @@
   },
 
   "sequence": {
-    "_comment": "Owner decree 2026-08-07. The order each face takes the TOP, and it is the colour wheel: yellow, orange, red, purple, blue, green. By position: top, right, back, bottom, left, front. Every consecutive pair shares a cube edge, so every transition is one 90-degree tumble and no step is a double flip — tests/test_face_order.py proves it rather than trusting it. It is also, face for face, the order of the six arms on the DOMY Watch dial.",
+    "_comment": "Owner decree 2026-08-07. `tops` is the order each face takes the TOP, and it is the colour wheel: yellow, orange, red, purple, blue, green. By position: top, right, back, bottom, left, front. Every consecutive pair shares a cube edge, so every transition is one 90-degree tumble and no step is a double flip — tests/test_face_order.py proves it rather than trusting it. It is also, face for face, the order of the six arms on the DOMY Watch dial. `weekdays` is the `by-day` mode (owner 2026-08-08), indexed by JavaScript's Date#getDay(): index 0 is SUNDAY, and Sunday is the one day with no colour — it gets the monochrome cube instead (see `mono`).",
     "tops": ["gold", "copper", "ruby", "amethyst", "sapphire", "emerald"],
+    "weekdays": ["mono", "sapphire", "copper", "amethyst", "gold", "ruby", "emerald"],
     "mode": "continuous",
-    "modes": ["continuous", "per-show"]
+    "modes": ["continuous", "per-show", "by-day"]
   },
 
   "timing": {
+    "_comment": "`viewTiltDegrees` is atan(1/sqrt(2)) negated — the TRUE isometric tilt, so a cube yawed to `startYawDegrees` presents a VERTEX to the viewer with all three visible faces equally foreshortened (owner 2026-08-08: the opening pose is never a face, always a corner). `dwellDegrees` is a full turn on purpose: at 320 the yaw drifted 40 degrees per face, so after three tumbles the pose was no longer the corner it started from — the opening state would have been correct only for the first four seconds of the animation's life.",
     "spinSpeed": 78,
-    "dwellDegrees": 320,
+    "dwellDegrees": 360,
     "tumbleSeconds": 0.7,
-    "viewTiltDegrees": -20
+    "viewTiltDegrees": -35.264,
+    "startYawDegrees": 45
+  },
+
+  "corners": {
+    "_comment": "Owner decision 2026-08-08, variant C of four shown live. Six rounded squares meeting at 90 degrees leave a triangular NOTCH at each of the eight vertices, and the page shows through it. A merely SCALED inner cube does not fix it — the notch sits at the outermost point of the silhouette, so an inner cube at 94% covers 94% and leaves the last 6% open. `core` is therefore a SHARP cube of the SAME edge with the rounded shell pushed a hair outside it: a closed solid behind every notch, so what shows through is a bevel facet and never the page. `maxRadiusPercent` CAPS each finish's own radiusPercent, so `bevel` keeps the per-finish nuance whole while `soft` levels everything to a fine edge.",
+    "default": "soft",
+    "variants": {
+      "soft":  {"label": "Soft bevel", "maxRadiusPercent": 5,   "core": true,  "seam": false},
+      "bevel": {"label": "Deep bevel", "maxRadiusPercent": 100, "core": true,  "seam": false},
+      "sharp": {"label": "Sharp",      "maxRadiusPercent": 0,   "core": false, "seam": false},
+      "seam":  {"label": "Gold seam",  "maxRadiusPercent": 0,   "core": false, "seam": true}
+    }
   },
 
   "palettes": {
+    "_comment": "The first three are colour palettes: each face a different hue. The last four are MONOCHROME — every face the same material — and exist for the Sunday cube and for `paletteMode: \"mono\"` (owner 2026-08-08: 'ta nova kocka je jednobojna bela i crna'). A monochrome palette still lists all six faces so a renderer never needs a special case: it indexes palette[face] exactly as before and simply gets the same answer six times.",
     "gems": {
       "label": "Royal Gems",
       "gold":     {"base": "#D9A62C", "lit": "#FFE08A", "deep": "#7E5510", "emblem": "#3A2705"},
@@ -53,20 +68,65 @@
       "amethyst": {"base": "#0D0E14", "lit": "#B183EC", "deep": "#05060A", "emblem": "#B183EC"},
       "sapphire": {"base": "#0D0E14", "lit": "#6E8BFF", "deep": "#05060A", "emblem": "#6E8BFF"},
       "emerald":  {"base": "#0D0E14", "lit": "#3ED3A0", "deep": "#05060A", "emblem": "#3ED3A0"}
+    },
+    "porcelain": {
+      "label": "Ceramic White",
+      "gold":     {"base": "#ECE7DC", "lit": "#FFFFFF", "deep": "#B4AD9D", "emblem": "#6A6357"},
+      "copper":   {"base": "#ECE7DC", "lit": "#FFFFFF", "deep": "#B4AD9D", "emblem": "#6A6357"},
+      "ruby":     {"base": "#ECE7DC", "lit": "#FFFFFF", "deep": "#B4AD9D", "emblem": "#6A6357"},
+      "amethyst": {"base": "#ECE7DC", "lit": "#FFFFFF", "deep": "#B4AD9D", "emblem": "#6A6357"},
+      "sapphire": {"base": "#ECE7DC", "lit": "#FFFFFF", "deep": "#B4AD9D", "emblem": "#6A6357"},
+      "emerald":  {"base": "#ECE7DC", "lit": "#FFFFFF", "deep": "#B4AD9D", "emblem": "#6A6357"}
+    },
+    "basalt": {
+      "label": "Ceramic Black",
+      "gold":     {"base": "#23252B", "lit": "#4E535E", "deep": "#0B0C10", "emblem": "#C8CBD2"},
+      "copper":   {"base": "#23252B", "lit": "#4E535E", "deep": "#0B0C10", "emblem": "#C8CBD2"},
+      "ruby":     {"base": "#23252B", "lit": "#4E535E", "deep": "#0B0C10", "emblem": "#C8CBD2"},
+      "amethyst": {"base": "#23252B", "lit": "#4E535E", "deep": "#0B0C10", "emblem": "#C8CBD2"},
+      "sapphire": {"base": "#23252B", "lit": "#4E535E", "deep": "#0B0C10", "emblem": "#C8CBD2"},
+      "emerald":  {"base": "#23252B", "lit": "#4E535E", "deep": "#0B0C10", "emblem": "#C8CBD2"}
+    },
+    "silver": {
+      "label": "Brushed Silver",
+      "gold":     {"base": "#B9BDC4", "lit": "#F2F5F8", "deep": "#6E747E", "emblem": "#3A3F48"},
+      "copper":   {"base": "#B9BDC4", "lit": "#F2F5F8", "deep": "#6E747E", "emblem": "#3A3F48"},
+      "ruby":     {"base": "#B9BDC4", "lit": "#F2F5F8", "deep": "#6E747E", "emblem": "#3A3F48"},
+      "amethyst": {"base": "#B9BDC4", "lit": "#F2F5F8", "deep": "#6E747E", "emblem": "#3A3F48"},
+      "sapphire": {"base": "#B9BDC4", "lit": "#F2F5F8", "deep": "#6E747E", "emblem": "#3A3F48"},
+      "emerald":  {"base": "#B9BDC4", "lit": "#F2F5F8", "deep": "#6E747E", "emblem": "#3A3F48"}
+    },
+    "onyx": {
+      "label": "Obsidian Black",
+      "gold":     {"base": "#14161C", "lit": "#3E4350", "deep": "#05060A", "emblem": "#C9CEDA"},
+      "copper":   {"base": "#14161C", "lit": "#3E4350", "deep": "#05060A", "emblem": "#C9CEDA"},
+      "ruby":     {"base": "#14161C", "lit": "#3E4350", "deep": "#05060A", "emblem": "#C9CEDA"},
+      "amethyst": {"base": "#14161C", "lit": "#3E4350", "deep": "#05060A", "emblem": "#C9CEDA"},
+      "sapphire": {"base": "#14161C", "lit": "#3E4350", "deep": "#05060A", "emblem": "#C9CEDA"},
+      "emerald":  {"base": "#14161C", "lit": "#3E4350", "deep": "#05060A", "emblem": "#C9CEDA"}
+    }
+  },
+
+  "mono": {
+    "_comment": "Owner 2026-08-08: 'white danju black nocu za nedelju', and the same pair is available on any day via `paletteMode: \"mono\"`. A style names its day palette and its night palette; both must be monochrome palettes above.",
+    "default": "ceramic",
+    "styles": {
+      "ceramic": {"label": "Ceramic", "day": "porcelain", "night": "basalt"},
+      "metal":   {"label": "Metal",   "day": "silver",    "night": "onyx"}
     }
   },
 
   "finishes": {
-    "_comment": "Names only — the recipes are per-stack (src/textures.js for the web). A stack that cannot draw one must say so, never silently substitute another.",
-    "matte":       {"label": "Matte enamel"},
-    "velvet":      {"label": "Velvet"},
-    "leather":     {"label": "Leather / plaster"},
-    "leatherdeep": {"label": "Deep leather"},
-    "aquarel":     {"label": "Watercolour with gold frame"},
-    "damask":      {"label": "Damask"},
-    "frame":       {"label": "Gold frame"},
-    "enamel":      {"label": "Enamel / cloisonne"},
-    "obsidian":    {"label": "Obsidian"}
+    "_comment": "Names and corner rounding only — the RECIPES are per-stack (src/textures.js for the web). A stack that cannot draw one must say so, never silently substitute another. `radiusPercent` is the finish's own corner rounding as a percentage of the edge (a framed face wants less than a jewelled one); the chosen `corners` variant caps it.",
+    "matte":       {"label": "Matte enamel",                "radiusPercent": 9},
+    "velvet":      {"label": "Velvet",                       "radiusPercent": 9},
+    "leather":     {"label": "Leather / plaster",            "radiusPercent": 9},
+    "leatherdeep": {"label": "Deep leather",                 "radiusPercent": 9},
+    "aquarel":     {"label": "Watercolour with gold frame",  "radiusPercent": 6},
+    "damask":      {"label": "Damask",                       "radiusPercent": 6},
+    "frame":       {"label": "Gold frame",                   "radiusPercent": 6},
+    "enamel":      {"label": "Enamel / cloisonne",           "radiusPercent": 11},
+    "obsidian":    {"label": "Obsidian",                     "radiusPercent": 11}
   },
 
   "emblems": {
@@ -83,40 +143,61 @@
   },
 
   "rings": {
-    "_comment": "One ring per face, and the ring shown is the one belonging to the face currently on TOP. These are compositions, not icons repeated round a circle (owner 2026-08-07: 'ne bezveze slicice listova nego napredni vizuelno lepi'). `radius` is a multiple of the cube's edge, measured from the cube centre. It must clear the cube's WIDEST moment, not its edge: a tumbling cube spans up to 0.866 of its edge from the centre (the space diagonal), so 0.92 left almost no air and the ring read as hugging. 1.15 gives the ~25% gap the owner's sketches show.",
+    "_comment": "One ring per face, and the ring shown is the one belonging to the face currently on TOP. These are compositions, not icons repeated round a circle (owner 2026-08-07: 'ne bezveze slicice listova nego napredni vizuelno lepi'). `radius` is a multiple of the cube's edge, measured from the cube centre. It must clear the cube's WIDEST moment, not its edge: a tumbling cube spans up to 0.866 of its edge from the centre (the space diagonal), so 0.92 left almost no air and the ring read as hugging. 1.15 gives the ~25% gap the owner's sketches show. The `art` names are the file stems a future realistic image set will use (UV/rings-prompts.md generates them); the drawn SVG stays the shipped artwork until the owner has those images.",
     "radius": 1.15,
     "perFace": {
-      "emerald":  {"kind": "laurel",   "label": "Laurel wreath"},
-      "sapphire": {"kind": "water",    "label": "Water"},
-      "copper":   {"kind": "fire",     "label": "Fire"},
-      "ruby":     {"kind": "electric", "label": "Electric arc"},
-      "gold":     {"kind": "corona",   "label": "Solar corona"},
-      "amethyst": {"kind": "phases",   "label": "Lunar phases"}
+      "emerald":  {"kind": "laurel",   "label": "Laurel wreath",  "art": "Laurel"},
+      "sapphire": {"kind": "water",    "label": "Water",          "art": "Water"},
+      "copper":   {"kind": "fire",     "label": "Fire",           "art": "Fire"},
+      "ruby":     {"kind": "electric", "label": "Electric arc",   "art": "Electric"},
+      "gold":     {"kind": "corona",   "label": "Solar corona",   "art": "Corona"},
+      "amethyst": {"kind": "phases",   "label": "Lunar phases",   "art": "MoonPhases"}
     }
   },
 
   "sky": {
-    "_comment": "The sun and the moon are real bodies riding a circle around the cube, not merely a light direction (owner 2026-08-07). Upper half of the circle is the sun's, lower half the moon's: 06:00 left, 12:00 at the zenith, 18:00 right, 00:00 at the bottom. A full moon really does light the cube — from below, so it is the lower faces that catch it — and its strength follows the phase.",
-    "bodyRadius": 0.44,
+    "_comment": "The sun and the moon are real bodies riding the FRAME, not a small circle inside it (owner 2026-08-08: 'sunce/mesec TREBA da ide po ivicama ekrana ... uvek hvata ivicu u tom uglu'). The hour gives an angle; the body sits where that angle's ray leaves the frame, so noon is the top edge, 15:00 is the corner and 18:00 the right edge. Upper half is the sun's, lower half the moon's: 06:00 left, 12:00 zenith, 18:00 right, 00:00 bottom. A full moon really does light the cube — from below, so it is the lower faces that catch it — and its strength follows the phase.",
+    "bodySizeFactor": 0.17,
+    "bodyMarginPx": 6,
     "sunriseHour": 6,
     "sunsetHour": 18,
     "sun":  {"ambient": 0.40, "power": 0.95, "horizonColor": "#FFB454", "zenithColor": "#FFF6E0"},
     "moon": {"ambient": 0.28, "power": 0.55, "horizonColor": "#7E93C8", "zenithColor": "#CBDCFF"},
     "synodicMonthDays": 29.530588853,
     "knownNewMoonUtc": "2000-01-06T18:14:00Z",
-    "dayGradient":   ["#BFE6FB", "#8FCDF2"],
-    "nightGradient": ["#2A2E38", "#14161C"]
+    "dayGradient":   ["#8FCDF2", "#DCEEF8"],
+    "nightGradient": ["#0B0E1A", "#2A3145"],
+    "plainDay":   "#A9D6F0",
+    "plainNight": "#151925"
+  },
+
+  "backdrop": {
+    "_comment": "Owner 2026-08-08: day is the day sky WITH clouds, night is the night sky WITH stars, light and dark are the same colours plain, cycle alternates them on the clock, transparent is nothing. Only the counts and timings live here — the gradient strings that draw a puff and the shadow list that draws a star are per-stack and live in src/backdrop.js. Two cloud bands, not one: a far band drifting slowly under a near band drifting faster is what reads as depth. `blendHours` is how long the cross-fade around sunrise and sunset takes, so `cycle` never cuts from noon to midnight in one frame.",
+    "clouds": [
+      {"puffs": 3, "opacity": 0.42, "driftSeconds": 150, "topPercent": 30, "heightPercent": 58},
+      {"puffs": 4, "opacity": 0.88, "driftSeconds": 86,  "topPercent": 4,  "heightPercent": 56}
+    ],
+    "stars":   {"perTile": 26, "tilePx": 300, "sizePx": 1.6, "twinklePerTile": 5, "twinkleTilePx": 430, "twinkleSizePx": 2.6},
+    "blendHours": 1.5
   },
 
   "defaults": {
-    "_comment": "What a consumer gets when it passes nothing. ONLY the spinning colour cube is core; everything else is opt-in (owner 2026-08-07).",
+    "_comment": "What a consumer gets when it passes nothing. ONLY the spinning colour cube is core; everything else is opt-in (owner 2026-08-07). `show` lets a consumer take the ring WITHOUT the cube or the cube without the ring (owner 2026-08-08). `paletteMode` decides who picks the palette: `fixed` honours `palette`, `day-night` swaps `paletteDay` for `paletteNight` after sunset, `mono` ignores both and uses the monochrome pair.",
     "size": 160,
     "palette": "gems",
+    "paletteMode": "fixed",
+    "paletteModes": ["fixed", "day-night", "mono"],
+    "paletteDay": "gems",
+    "paletteNight": "velvet",
+    "monoStyle": "ceramic",
     "finish": "enamel",
+    "corners": "soft",
     "emblems": "elements",
     "ring": false,
     "sky": false,
+    "show": "both",
+    "shows": ["both", "cube", "ring"],
     "background": "transparent",
-    "backgrounds": ["transparent", "dark", "light", "sky"]
+    "backgrounds": ["transparent", "light", "dark", "day", "night", "cycle"]
   }
 }

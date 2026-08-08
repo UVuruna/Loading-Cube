@@ -117,6 +117,9 @@ def test_the_guard_is_actually_looking_at_this_project(pair):
     """A parser that silently produced an empty dict would pass everything."""
     on_disk, mirror = pair
     assert len(mirror) >= 8, mirror.keys()
-    assert "palettes" in mirror and len(mirror["palettes"]) == 3
+    # `>= 3`, not `== N`: the point is that the narrow parser really produced the
+    # tables and not an empty dict, and pinning the exact count would just mean
+    # editing this line every time a palette is born (four arrived 2026-08-08).
+    assert "palettes" in mirror and len(mirror["palettes"]) >= 3
     assert len(mirror["sequence"]["tops"]) == 6
     assert on_disk["version"] == mirror["version"]
