@@ -2,12 +2,17 @@
 
 Runs the project's guard tests via `pytest.main`, prints a failure summary to
 stderr, and exits **2** on failure — exit 2 is what makes a PostToolUse/Stop
-hook BLOCKING. Stays fast (well under ~2 s) and deterministic: guards only,
-never the full component test suite (`tests/test_*_parity.py` etc. take over
-a minute and belong to `python -m pytest tests/`, not here).
+hook BLOCKING. Stays fast (well under ~2 s) and deterministic.
+
+EVERY guard runs on Stop here, including the three the component owns itself
+(face order, spec parity, shadow lengths). The usual reason to hold a parity
+check back — that it takes a minute — does not apply: all three read files and
+compare strings, and the whole set finishes in well under a second. A law with
+teeth that only bite when someone remembers to run pytest is a law without
+teeth.
 
 Usage:
-    python tests/run_guards.py           # all four guards (Stop hook)
+    python tests/run_guards.py           # every guard (Stop hook)
     python tests/run_guards.py --fast    # structure law + config sections only (PostToolUse hook)
 
 When Claude Code invokes this as a PostToolUse hook, the tool-call JSON
@@ -24,10 +29,15 @@ from pathlib import Path
 TESTS_DIR = Path(__file__).resolve().parent
 
 ALL_GUARDS = [
+    # root CODE.md / DOCS.md enforcement
     "test_structure_law.py",
     "test_config_sections.py",
     "test_docs_coverage.py",
     "test_doc_links.py",
+    # this component's own laws (project CLAUDE.md)
+    "test_face_order.py",
+    "test_spec_parity.py",
+    "test_shadow_lengths.py",
 ]
 FAST_GUARDS = ["test_structure_law.py", "test_config_sections.py"]
 
@@ -76,8 +86,9 @@ def main() -> int:
     if result != 0:
         print(
             "\nGUARD FAILURE — THE STRUCTURE LAW / CONFIG SECTION LAW / "
-            "DOCS.md enforcement (root CODE.md) is blocking until this is "
-            "fixed. See the pytest output above for which guard and why.",
+            "DOCS.md enforcement (root CODE.md), or one of this component's own "
+            "laws (face order, spec parity, shadow lengths), is blocking until "
+            "this is fixed. See the pytest output above for which guard and why.",
             file=sys.stderr,
         )
         return 2
