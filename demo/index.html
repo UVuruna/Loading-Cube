@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,11 +32,11 @@ section:first-of-type{border-top:0;padding-top:0}
 
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
 .grid{display:grid;gap:20px}
-.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
 .split{display:grid;grid-template-columns:400px minmax(0,1fr);gap:26px;align-items:start}
 /* One control per row. Two columns cut 'Watercolour with gold frame' and
-   'neprekidno kroz svih 6' mid-word, with the native caret sitting on top
+   'through all six faces' mid-word, with the native caret sitting on top
    of the truncation — a select cannot ellipsis its way out of that. */
 .fields{display:grid;grid-template-columns:1fr;gap:14px}
 .fields > div{min-width:0}
@@ -56,12 +56,24 @@ button[aria-pressed=true]{background:#241F12;border-color:var(--gold);color:var(
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-.viewer{background:#05060A;border:1px solid var(--line);border-radius:14px;
-  min-height:520px;display:grid;place-items:center;overflow:hidden}
-.viewer.checker{background-color:#1B1E27;background-image:
+/* THE VIEWPORT. The mount is what gets shaped, not the cube — the whole point
+   of the desktop/mobile switch is to see how much air is left around the cube
+   at each shape, and resizing the cube instead would answer nothing. */
+.frame{background:#05060A;border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;display:grid;place-items:center;margin:0 auto;
+  width:100%;max-width:100%}
+/* Both selectors, and both at least as specific as the rule they must beat:
+   `.card .cell` sets its own background at (0,2,0), so a lone `.checker` at
+   (0,1,0) lost the cascade and the gallery's transparent tile showed plain
+   black instead of "nothing here". */
+.frame.checker,.card .cell.checker{background-color:#1B1E27;background-image:
   linear-gradient(45deg,#22262F 25%,transparent 25%,transparent 75%,#22262F 75%),
   linear-gradient(45deg,#22262F 25%,transparent 25%,transparent 75%,#22262F 75%);
   background-size:20px 20px;background-position:0 0,10px 10px}
+.frame.desktop{aspect-ratio:16/9;min-height:340px}
+.frame.mobile{aspect-ratio:9/16;max-width:330px;min-height:420px}
+.frame.fit{min-height:520px}
+.viewer{width:100%;height:100%;display:grid;place-items:center}
 .readout{font-family:var(--f-mono);font-size:12px;letter-spacing:.09em;text-transform:uppercase;
   color:var(--muted);text-align:center;margin-top:12px}
 .readout b{color:var(--gold-lit)}
@@ -75,23 +87,27 @@ pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:
   display:flex;flex-direction:column;gap:10px;align-items:center}
 .card .cell{background:#05060A;border:1px solid var(--line);border-radius:10px;
   width:100%;display:grid;place-items:center;overflow:hidden}
+/* The corner gallery gets a LIGHT cell on purpose: a hole at a vertex only
+   reads as a hole when something bright is behind it, which is exactly why the
+   defect survived six rounds of looking at it on black. */
+.card.corner .cell{background:linear-gradient(180deg,#CBE9FA,#96CDEE)}
 .card small{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);text-align:center}
 .perf{font-family:var(--f-mono);font-size:12px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
 .perf b{color:var(--ok);font-variant-numeric:tabular-nums}
-@media (max-width:960px){.split{grid-template-columns:1fr}.g3{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:640px){.wrap{padding:20px 16px 64px}.g2,.g3{grid-template-columns:1fr}}
+@media (max-width:960px){.split{grid-template-columns:1fr}.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.wrap{padding:20px 16px 64px}.g3,.g4{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
 
 <header>
-  <p class="eyebrow">Loading Cube · loading cube · playground</p>
-  <h1>Izaberi svoju verziju</h1>
-  <p class="lede">Osnovno je samo kocka koja se okreće kroz šest boja. Sve ostalo — amblemi,
-    prsten, sunce i mesec, pozadina — bira onaj ko paket ugrađuje. Ovde probaj kombinaciju,
-    pa prepiši poziv u svoj kod.</p>
+  <p class="eyebrow">Loading Cube · playground</p>
+  <h1>Choose your version</h1>
+  <p class="lede">The core is just a cube turning through six colours. Everything else —
+    emblems, the ring, the sun and moon, the backdrop — is chosen by whoever embeds the
+    package. Try a combination here, then copy the call into your own code.</p>
 </header>
 
 <section>
@@ -99,60 +115,89 @@ pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:
     <div>
       <div class="panel">
         <div class="fields">
-          <div><label class="fld" for="c-palette">Paleta</label><select id="c-palette"></select></div>
-          <div><label class="fld" for="c-finish">Dezen</label><select id="c-finish"></select></div>
-          <div><label class="fld" for="c-emblems">Amblemi</label><select id="c-emblems"></select></div>
-          <div><label class="fld" for="c-ring">Prsten</label><select id="c-ring"></select></div>
-          <div><label class="fld" for="c-sky">Sunce i mesec</label><select id="c-sky"></select></div>
-          <div><label class="fld" for="c-bg">Pozadina</label><select id="c-bg"></select></div>
-          <div><label class="fld" for="c-mode">Niz</label><select id="c-mode"></select></div>
-          <div><label class="fld" for="c-size">Veličina <span id="size-label" class="mono">160</span> px</label>
+          <div><label class="fld" for="c-show">Show</label><select id="c-show"></select></div>
+          <div><label class="fld" for="c-mode">Sequence</label><select id="c-mode"></select></div>
+          <div><label class="fld" for="c-palette-mode">Palette picked by</label><select id="c-palette-mode"></select></div>
+          <div><label class="fld" for="c-palette">Palette</label><select id="c-palette"></select></div>
+          <div><label class="fld" for="c-mono">Monochrome material</label><select id="c-mono"></select></div>
+          <div><label class="fld" for="c-finish">Finish</label><select id="c-finish"></select></div>
+          <div><label class="fld" for="c-corners">Corners</label><select id="c-corners"></select></div>
+          <div><label class="fld" for="c-emblems">Emblems</label><select id="c-emblems"></select></div>
+          <div><label class="fld" for="c-ring">Ring</label><select id="c-ring"></select></div>
+          <div><label class="fld" for="c-sky">Sun and moon</label><select id="c-sky"></select></div>
+          <div><label class="fld" for="c-bg">Backdrop</label><select id="c-bg"></select></div>
+          <div><label class="fld" for="c-size">Size <span id="size-label">160</span> px</label>
             <input type="range" id="c-size" min="80" max="260" step="4" value="160"></div>
         </div>
       </div>
 
       <div class="panel" style="margin-top:16px">
-        <label class="fld" for="c-hour">Doba dana — <span id="hour-label" style="color:var(--gold-lit)">12:00</span>
+        <label class="fld" for="c-hour">Time of day — <span id="hour-label" style="color:var(--gold-lit)">12:00</span>
           <span id="phase-label" style="color:var(--muted)"></span></label>
         <input type="range" id="c-hour" min="0" max="23.9" step="0.1" value="12">
         <div class="row" style="margin-top:14px">
-          <button id="b-now">Sada</button>
-          <button id="b-cycle" aria-pressed="false">Pusti 24 h</button>
-          <button id="b-play" aria-pressed="true">Pauza</button>
+          <button id="b-now">Now</button>
+          <button id="b-cycle" aria-pressed="false">Run 24 h</button>
+          <button id="b-play" aria-pressed="true">Pause</button>
         </div>
       </div>
 
       <div class="panel" style="margin-top:16px">
-        <label class="fld">Poziv u tvom kodu</label>
+        <label class="fld">The call in your code</label>
         <pre class="code" id="snippet"></pre>
       </div>
 
       <div class="panel" style="margin-top:16px">
-        <label class="fld">Merenje uživo</label>
+        <label class="fld">Measured live</label>
         <div class="perf">
-          <span>naš posao <b id="p-work">—</b> ms/kadar</span>
-          <span>kadar <b id="p-frame">—</b> ms</span>
-          <span>udeo <b id="p-share">—</b> %</span>
+          <span>our work <b id="p-work">—</b> ms/frame</span>
+          <span>frame <b id="p-frame">—</b> ms</span>
+          <span>share <b id="p-share">—</b> %</span>
         </div>
       </div>
     </div>
 
     <div>
-      <div class="viewer" id="viewer"></div>
+      <div class="row" style="margin-bottom:14px">
+        <span class="fld" style="margin:0">Viewport</span>
+        <button id="v-desktop" aria-pressed="true">Desktop 16:9</button>
+        <button id="v-mobile" aria-pressed="false">Mobile 9:16</button>
+        <button id="v-fit" aria-pressed="false">Fit</button>
+        <span class="readout" id="frame-size" style="margin:0 0 0 auto">—</span>
+      </div>
+      <div class="frame desktop" id="frame"><div class="viewer" id="viewer"></div></div>
       <div class="readout" id="readout">—</div>
     </div>
   </div>
 </section>
 
 <section>
-  <h2>Šest prstenova</h2>
-  <p>Prsten je onaj koji pripada strani koja je gore — ako je gore zelena, vrti se lovorov venac.</p>
+  <h2>Four corner treatments</h2>
+  <p>Six rounded faces meeting at 90° leave a triangular notch at each of the eight
+    vertices, and the page shows through it. <b>Soft bevel</b> is the shipped default: a
+    sharp core of the same edge behind a lightly rounded shell, so a notch looks onto a
+    bevel facet and never onto the page.</p>
+  <div class="grid g4" id="corner-gallery"></div>
+</section>
+
+<section>
+  <h2>Six backdrops</h2>
+  <p>Not one picture among them: clouds are drifting gradients, stars are one element
+    carrying a list of shadows. <code>day cycle</code> follows the same clock as the sun
+    and the moon.</p>
+  <div class="grid g3" id="backdrop-gallery"></div>
+</section>
+
+<section>
+  <h2>Six rings</h2>
+  <p>The ring shown belongs to the face on top — green up, the laurel wreath turns.</p>
   <div class="grid g3" id="ring-gallery"></div>
 </section>
 
 <section>
-  <h2>Devet dezena</h2>
-  <p>Nijedan nije slika: sve su gradijenti i računati šum, pa prate paletu i ostaju oštri na svakoj veličini.</p>
+  <h2>Nine finishes</h2>
+  <p>None is an image: all of them are gradients and computed noise, so they follow the
+    palette and stay sharp at any size.</p>
   <div class="grid g3" id="finish-gallery"></div>
 </section>
 
@@ -161,63 +206,76 @@ pre.code{margin:0;background:#05060A;border:1px solid var(--line);border-radius:
 <script type="module">
 import LoadingCube, { SPEC, FACES } from "../src/loading-cube.js";
 import { buildRing } from "../src/rings.js";
-import { FINISHES, FINISH_RADIUS } from "../src/textures.js";
+import { FINISHES } from "../src/textures.js";
 import { skyAt, moonPhase, moonIllumination, hoursOf } from "../src/sky.js";
 
-const SR = {gold:"Žuta", copper:"Narandžasta", ruby:"Crvena",
-            amethyst:"Ljubičasta", sapphire:"Plava", emerald:"Zelena"};
+const FACE_NAMES = {gold:"Yellow", copper:"Orange", ruby:"Red",
+                    amethyst:"Purple", sapphire:"Blue", emerald:"Green"};
 const $ = id => document.getElementById(id);
 
 const state = {
-  palette:"gems", finish:"enamel", emblems:"elements",
-  ring:true, sky:true, background:"transparent", mode:"continuous", size:160
+  show:"both", mode:"continuous", paletteMode:"fixed", palette:"gems",
+  monoStyle:"ceramic", finish:"enamel", corners:"soft", emblems:"elements",
+  ring:true, sky:true, background:"transparent", size:160
 };
-let hour = 12, cycling = false, playing = true;
+let hour = 12, cycling = false, playing = true, viewport = "desktop";
 
 function fill(sel, entries, value){
   sel.innerHTML = entries.map(([v,l]) =>
     `<option value="${v}"${v===value?" selected":""}>${l}</option>`).join("");
 }
-fill($("c-palette"), Object.entries(SPEC.palettes).map(([k,v]) => [k, v.label]), state.palette);
-fill($("c-finish"),  Object.entries(SPEC.finishes).map(([k,v]) => [k, v.label]), state.finish);
-fill($("c-emblems"), Object.entries(SPEC.emblems.families).map(([k,v]) => [k, v.label])
-                       .concat([["none","bez amblema"]]), state.emblems);
-fill($("c-ring"),    [["true","prsten po strani"],["false","bez prstena"]], String(state.ring));
-fill($("c-sky"),     [["true","sunce i mesec"],["false","bez, ravnomerno"]], String(state.sky));
+const labelled = table => Object.entries(table).map(([k,v]) => [k, v.label]);
+
+fill($("c-show"),    [["both","cube and ring"],["cube","cube only"],["ring","ring only"]], state.show);
+fill($("c-mode"),    [["continuous","continuous, through all six"],
+                      ["per-show","one face per appearance"],
+                      ["by-day","by weekday — Sunday is monochrome"]], state.mode);
+fill($("c-palette-mode"), [["fixed","the palette below"],
+                           ["day-night","light by day, dark by night"],
+                           ["mono","monochrome — white by day, black by night"]], state.paletteMode);
+fill($("c-palette"), labelled(SPEC.palettes), state.palette);
+fill($("c-mono"),    labelled(SPEC.mono.styles), state.monoStyle);
+fill($("c-finish"),  labelled(SPEC.finishes), state.finish);
+fill($("c-corners"), labelled(SPEC.corners.variants), state.corners);
+fill($("c-emblems"), labelled(SPEC.emblems.families).concat([["none","no emblems"]]), state.emblems);
+fill($("c-ring"),    [["true","the top face's ring"],["false","no ring"]], String(state.ring));
+fill($("c-sky"),     [["true","sun and moon"],["false","none, even light"]], String(state.sky));
 fill($("c-bg"),      SPEC.defaults.backgrounds.map(b => [b, {
-                       transparent:"providna", dark:"tamna", light:"svetla", sky:"nebo po satu"}[b]]),
+                       transparent:"transparent", light:"light — plain day colour",
+                       dark:"dark — plain night colour", day:"day — sky and clouds",
+                       night:"night — sky and stars", cycle:"day cycle — follows the clock"}[b]]),
                      state.background);
-fill($("c-mode"),    [["continuous","neprekidno kroz svih 6"],["per-show","jedna strana po pojavi"]], state.mode);
 
 let cube = null;
 function build(){
   const viewer = $("viewer");
-  viewer.classList.toggle("checker", state.background === "transparent");
+  $("frame").classList.toggle("checker", state.background === "transparent");
   if (cube) cube.destroy();
-  cube = LoadingCube.mount(viewer, {
-    ...state,
-    clock: () => hour,
-    autoplay: playing
-  });
+  cube = LoadingCube.mount(viewer, {...state, clock: () => hour, autoplay: playing});
   if (!playing) cube.pause();
   $("snippet").textContent =
     `import LoadingCube from "./src/loading-cube.js";\n\n` +
     `LoadingCube.mount("#splash", {\n` +
-    `  size:       ${state.size},\n` +
-    `  palette:    ${JSON.stringify(state.palette)},\n` +
-    `  finish:     ${JSON.stringify(state.finish)},\n` +
-    `  emblems:    ${JSON.stringify(state.emblems)},\n` +
-    `  ring:       ${state.ring},\n` +
-    `  sky:        ${state.sky},\n` +
-    `  background: ${JSON.stringify(state.background)},\n` +
-    `  mode:       ${JSON.stringify(state.mode)}\n});`;
+    `  size:        ${state.size},\n` +
+    `  show:        ${JSON.stringify(state.show)},\n` +
+    `  mode:        ${JSON.stringify(state.mode)},\n` +
+    `  paletteMode: ${JSON.stringify(state.paletteMode)},\n` +
+    `  palette:     ${JSON.stringify(state.palette)},\n` +
+    `  monoStyle:   ${JSON.stringify(state.monoStyle)},\n` +
+    `  finish:      ${JSON.stringify(state.finish)},\n` +
+    `  corners:     ${JSON.stringify(state.corners)},\n` +
+    `  emblems:     ${JSON.stringify(state.emblems)},\n` +
+    `  ring:        ${state.ring},\n` +
+    `  sky:         ${state.sky},\n` +
+    `  background:  ${JSON.stringify(state.background)}\n});`;
 }
 
 const bind = (id, key, cast = v => v) => $(id).addEventListener("change", e => {
   state[key] = cast(e.target.value); build();
 });
-bind("c-palette","palette"); bind("c-finish","finish"); bind("c-emblems","emblems");
-bind("c-bg","background"); bind("c-mode","mode");
+bind("c-show","show"); bind("c-mode","mode"); bind("c-palette-mode","paletteMode");
+bind("c-palette","palette"); bind("c-mono","monoStyle"); bind("c-finish","finish");
+bind("c-corners","corners"); bind("c-emblems","emblems"); bind("c-bg","background");
 bind("c-ring","ring", v => v === "true"); bind("c-sky","sky", v => v === "true");
 $("c-size").addEventListener("input", e => {
   state.size = parseInt(e.target.value, 10);
@@ -225,17 +283,40 @@ $("c-size").addEventListener("input", e => {
   build();
 });
 
+// ── the viewport switch ──────────────────────────────────────────────────
+const VIEWPORTS = {desktop:"v-desktop", mobile:"v-mobile", fit:"v-fit"};
+function setViewport(next){
+  viewport = next;
+  const frame = $("frame");
+  for (const [name, id] of Object.entries(VIEWPORTS)){
+    frame.classList.toggle(name, name === next);
+    $(id).setAttribute("aria-pressed", String(name === next));
+  }
+  // The mount reads its host's size, so it has to be rebuilt AFTER the shape
+  // changes — the sun rides the frame's edge and the frame just moved.
+  requestAnimationFrame(() => { build(); reportFrame(); });
+}
+for (const [name, id] of Object.entries(VIEWPORTS)){
+  $(id).addEventListener("click", () => setViewport(name));
+}
+function reportFrame(){
+  const r = $("frame").getBoundingClientRect();
+  $("frame-size").textContent = `${Math.round(r.width)} × ${Math.round(r.height)} px`;
+}
+addEventListener("resize", reportFrame);
+
+// ── the clock ────────────────────────────────────────────────────────────
 const fmt = h => `${String(Math.floor(h)).padStart(2,"0")}:${String(Math.floor((h%1)*60)).padStart(2,"0")}`;
 function paintClock(){
   const s = skyAt(hour);
   $("hour-label").textContent = fmt(hour);
   const p = moonPhase();
   $("phase-label").textContent =
-    ` · ${s.isDay ? "sunce" : "mesec"} · mesečeva mena ${(p*100).toFixed(0)}% ciklusa, ` +
-    `osvetljen ${(moonIllumination(p)*100).toFixed(0)}%`;
+    ` · ${s.isDay ? "sun" : "moon"} · lunar phase ${(p*100).toFixed(0)}% of the cycle, ` +
+    `${(moonIllumination(p)*100).toFixed(0)}% lit`;
   const top = cube && cube.lastTop;
   $("readout").textContent = top
-    ? `gore: ${SR[top].toUpperCase()} · prsten: ${SPEC.rings.perFace[top].label}`
+    ? `top: ${FACE_NAMES[top].toUpperCase()} · ring: ${SPEC.rings.perFace[top].label}`
     : "—";
 }
 $("c-hour").addEventListener("input", e => { hour = parseFloat(e.target.value); paintClock(); });
@@ -248,7 +329,7 @@ $("b-cycle").addEventListener("click", e => {
 });
 $("b-play").addEventListener("click", e => {
   playing = !playing;
-  e.target.textContent = playing ? "Pauza" : "Pusti";
+  e.target.textContent = playing ? "Pause" : "Play";
   e.target.setAttribute("aria-pressed", String(playing));
   playing ? cube.play() : cube.pause();
 });
@@ -258,27 +339,44 @@ setInterval(() => {
 }, 60);
 
 // ── galleries ────────────────────────────────────────────────────────────
-{
-  const g = $("ring-gallery");
-  for (const face of SPEC.sequence.tops){
-    const ring = SPEC.rings.perFace[face];
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `<h3>${ring.label}</h3>`;
-    const cell = document.createElement("div");
-    cell.className = "cell";
-    cell.style.aspectRatio = "1/1";
-    cell.appendChild(buildRing(ring.kind, SPEC.palettes.gems[face].lit, 200));
-    cell.firstChild.style.position = "relative";
-    card.appendChild(cell);
-    const s = document.createElement("small");
-    s.textContent = `${SR[face]} gore`;
-    card.appendChild(s);
-    g.appendChild(card);
-  }
+function galleryCard(host, title, note, className = ""){
+  const card = document.createElement("div");
+  card.className = "card" + (className ? " " + className : "");
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.style.aspectRatio = "1/1";
+  card.append(cell);
+  const h = document.createElement("h3"); h.textContent = title; card.appendChild(h);
+  if (note){ const s = document.createElement("small"); s.textContent = note; card.appendChild(s); }
+  host.appendChild(card);
+  return cell;
 }
+
+for (const [key, meta] of Object.entries(SPEC.corners.variants)){
+  const cell = galleryCard($("corner-gallery"), meta.label,
+                           key === SPEC.corners.default ? "default" : `corners: "${key}"`,
+                           "corner");
+  LoadingCube.mount(cell, {size: 92, corners: key, emblems: "none", background: "transparent"});
+}
+
+for (const key of SPEC.defaults.backgrounds){
+  const cell = galleryCard($("backdrop-gallery"), key, `background: "${key}"`);
+  if (key === "transparent") cell.classList.add("checker");
+  // `cycle` is shown at dusk on purpose: at noon it is the day tile and at
+  // midnight the night one, and a still picture of either says nothing about
+  // what the option DOES.
+  const hour = key === "night" ? 22 : key === "cycle" ? 18.4 : 11;
+  LoadingCube.mount(cell, {size: 96, background: key, emblems: "none", hour});
+}
+
+for (const face of SPEC.sequence.tops){
+  const ring = SPEC.rings.perFace[face];
+  const cell = galleryCard($("ring-gallery"), ring.label, `${FACE_NAMES[face]} on top`);
+  cell.appendChild(buildRing(ring.kind, SPEC.palettes.gems[face].lit, 200));
+  cell.firstChild.style.position = "relative";
+}
+
 {
-  const g = $("finish-gallery");
   const demoFace = {matte:"sapphire", velvet:"amethyst", leather:"copper",
                     leatherdeep:"sapphire", aquarel:"emerald", damask:"emerald",
                     frame:"emerald", enamel:"ruby", obsidian:"gold"};
@@ -286,16 +384,16 @@ setInterval(() => {
                    aquarel:"velvet", leatherdeep:"velvet", obsidian:"obsidian"};
   for (const [key, meta] of Object.entries(SPEC.finishes)){
     const colours = SPEC.palettes[demoPal[key] || "gems"][demoFace[key]];
-    const card = document.createElement("div");
-    card.className = "card";
+    const cell = galleryCard($("finish-gallery"), meta.label, `finish: "${key}"`);
+    cell.style.aspectRatio = "16/10";
     const tile = document.createElement("div");
     tile.style.width = "100%";
-    tile.style.aspectRatio = "16/10";
+    tile.style.height = "100%";
     tile.style.borderRadius = "10px";
-    Object.assign(tile.style, FINISHES[key](colours));
-    card.appendChild(tile);
-    const h = document.createElement("h3"); h.textContent = meta.label; card.appendChild(h);
-    g.appendChild(card);
+    // 220 px, not the tile's own width: the recipes take the CUBE's edge, and a
+    // swatch that lies about its size would draw a gold rim the wrong weight.
+    Object.assign(tile.style, FINISHES[key](colours, 220));
+    cell.appendChild(tile);
   }
 }
 
@@ -319,6 +417,7 @@ let acc = 0, work = 0, n = 0, last = performance.now();
 
 build();
 paintClock();
+reportFrame();
 </script>
 </body>
 </html>
