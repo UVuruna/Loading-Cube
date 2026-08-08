@@ -21,6 +21,9 @@ flowchart TD
     I --> J[frame]
     H -->|yes| J
     J --> K[for each running instance: rotation step, then paint]
+    K --> K2{clock decides the palette, and its key changed?}
+    K2 -->|yes| K3[rebuild, carrying the rotation when the face is the same]
+    K2 -->|no| L
     K --> L{sky on?}
     L -->|yes| M[shade six faces, move the body to the frame edge, blend the backdrop]
     L -->|no| N[blend the backdrop only — the day cycle still follows the clock]

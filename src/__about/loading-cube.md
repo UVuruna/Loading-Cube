@@ -25,6 +25,24 @@ because both depend on the clock and the calendar, and answering them apart is
 how a Sunday ends up with a coloured cube. The weekday wins first: Sunday's entry
 is the string `"mono"`, not a face, and it overrides `paletteMode` entirely.
 
+## The clock can change the palette under you
+
+All three of those switches are hour-dependent, and answering them once at mount
+is not enough: a page that stays up across a sunset would show the wrong cube for
+the rest of the night. That is exactly what happened — the moon rose, the
+lighting turned cold, and the monochrome cube stayed white until someone touched
+an unrelated control and forced the rebuild that should have happened by itself.
+Found by the independent grader, who also named why it looked fine in testing:
+every manual check happens to touch a control.
+
+So `_resolvePalette` returns a `key` that changes exactly when its answer does,
+and `_frame` compares it. The comparison is a string compare on frames where the
+clock matters at all (`_clockDecidesPalette`), and the rebuild it guards happens
+at most twice a day. `_rebuildForClock` carries the rotation across when the face
+being walked is unchanged, so a sunset re-skins the cube without jolting the
+tumble back to its first face; when `by-day` rolls over midnight the sequence
+really is different and a fresh rotation is the right answer.
+
 ## The root fills its host when anything needs the host's extent
 
 That means whenever `sky` is on or a backdrop is set: the bodies ride the frame's
