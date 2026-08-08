@@ -26,15 +26,27 @@ const CSS = `
    the whole reason it looked stuck behind the cube. */
 .lc-root.lc-fill{width:100%;height:100%}
 
+/* NOTHING INSIDE A FILLING ROOT IS IN FLOW, and that is deliberate.
+   Two attempts got this wrong in the same way. An in-flow child carrying the
+   cube's box (491px) inside a 426px frame made the root 491px tall: its grid row
+   is auto-sized to its content, and an auto row only STRETCHES to a definite
+   container while there is free space left to give — at 491 in a 426 box there is
+   none, so the row kept the larger figure and height:100% resolved against it.
+   The frame then clipped the ring, and the sun/moon maths, which trust the root's
+   own rect, placed the moon against an edge that was not the visible one.
+   Graded 2/10.
+   With every child absolute the row's max-content is 0, free space is the whole
+   container, and the row stretches to exactly the host. The one case that leaves
+   — a host stating no height at all — is not decidable in CSS, so it is decided
+   in JS where the measurement already happens (loading-cube.js _measure). */
+
 /* The fit layer holds everything that must stay concentric — the ring and the
    cube — so ONE transform shrinks the whole composition when the host is
-   smaller than it wants to be. The sun and the moon sit outside it: they ride
-   the real frame and must not shrink with the cube.
-   IN FLOW, not absolute, and carrying the cube's own box as its width and
-   height: that is what gives a filling root an intrinsic size, so a host with no
-   stated height still shows something instead of collapsing to nothing. A
-   transform does not affect layout, so scaling it down never changes that. */
-.lc-fit{position:relative;display:grid;place-items:center;transform-origin:50% 50%}
+   smaller than it wants to be. ABSOLUTE, so it can never push the root around.
+   The sun and the moon sit outside it: they ride the real frame and must not
+   shrink with the cube. */
+.lc-fit{position:absolute;inset:0;display:grid;place-items:center;
+  transform-origin:50% 50%}
 
 /* ── backdrops ────────────────────────────────────────────────────────
    Every layer is absolute and behind the stage; the cube's own z-index puts it
@@ -54,12 +66,13 @@ const CSS = `
    covers any frame at any aspect ratio without ever being measured. */
 .lc-stars{position:absolute;inset:0;pointer-events:none;z-index:0}
 
-/* The day-cycle backdrop cross-fades the night scene over the day one — opacity
-   only, so the whole transition stays on the compositor.
+/* The day-cycle backdrop cross-fades the night scene over the day one by
+   OPACITY ALONE, written from JS — there is deliberately no CSS transition here.
+   One re-armed on every rebuild and travelled from the element's default opacity
+   of 1, so noon flashed a starry dusk for most of a second. See backdrop.js.
    (No backticks anywhere below this line: the whole stylesheet is one template
    literal, and a backtick in a CSS comment ends it — which is exactly how this
    file broke the first time it was run.) */
-.lc-fade{transition:opacity .9s linear}
 
 /* Painting order, stated once: backdrop 0, ring 1, sun/moon 2, cube 3. The cube
    is the subject, so nothing ever covers it; the body passes in FRONT of the

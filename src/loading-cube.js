@@ -170,8 +170,6 @@ class LoadingCubeInstance {
     // the cube.
     const fit = document.createElement("div");
     fit.className = "lc-fit";
-    fit.style.width = `${this.box}px`;
-    fit.style.height = `${this.box}px`;
     root.appendChild(fit);
     this.fit = fit;
 
@@ -285,6 +283,26 @@ class LoadingCubeInstance {
    * rect inside rAF forces a layout.
    */
   _measure() {
+    // A filling root takes its size from the host and nothing else. The one case
+    // CSS cannot answer is a host that states no size of its own — every child
+    // here is absolute, so there is no content to fall back on and the root
+    // would collapse to nothing. Decide that here, where the measurement already
+    // is, and clear the fallback first so a host that has SINCE been given a size
+    // wins over a decision made when it had none.
+    if (this.fills) {
+      if (this.sizeFallback) {
+        this.root.style.removeProperty("width");
+        this.root.style.removeProperty("height");
+        this.sizeFallback = false;
+      }
+      const probe = this.root.getBoundingClientRect();
+      if (probe.width < 4 || probe.height < 4) {
+        if (probe.width < 4) this.root.style.width = `${this.box}px`;
+        if (probe.height < 4) this.root.style.height = `${this.box}px`;
+        this.sizeFallback = true;
+      }
+    }
+
     const rect = this.root.getBoundingClientRect();
     const width = rect.width || this.box;
     const height = rect.height || this.box;

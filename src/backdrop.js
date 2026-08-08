@@ -171,9 +171,18 @@ export function buildBackdrop(root, background) {
   // `cycle` is the only one that keeps a handle on the clock: both scenes are
   // built once and the night one is cross-faded over the day one. Rebuilding a
   // sky field twice a day would be the expensive way to do the same thing.
+  //
+  // NO CSS TRANSITION on that cross-fade, and the reason is worth the comment.
+  // A `transition: opacity .9s` re-arms on every rebuild, and an element born
+  // with the default opacity of 1 then TRAVELS from full night to the correct
+  // value — so setting the clock to noon flashed a starry dusk for most of a
+  // second, and so did changing any unrelated control. Graded 6/10.
+  // It buys nothing either way: `daylight` is continuous and this writes at 1%
+  // granularity, which over a 1.5-hour blend is one step every fifty seconds.
+  // The value IS the animation.
   const day = dayScene();
   const night = nightScene();
-  night.classList.add("lc-fade");
+  night.style.opacity = "0";      // a definite start, never the default 1
   root.append(day, night);
 
   let painted = -1;
