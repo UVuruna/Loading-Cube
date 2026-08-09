@@ -8,3 +8,6 @@ node_modules/
 # Session evidence, not product: a proof file names the commit it graded, so
 # committing it would move HEAD past the very commit it points at.
 .claude/visual-proof.json
+
+# Claude Code working folder - never tracked (owner decree 2026-08-09)
+.claude/
