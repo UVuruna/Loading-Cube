@@ -17,7 +17,7 @@ DOMY canon where the Moon is Monday's blue: blue IS water and the moon is what
 pulls it, while purple is the night the moon hangs in. `elementsDomy` keeps
 the dial's strict letter for anyone who wants it.
 
-`planets` and `virtues` are copied from `Gadgets/DOMY Watch/SYMBOLISM.md` —
+`planets` and `virtues` are copied from `Gadgets/Watch Academy/SYMBOLISM.md` —
 Jupiter yellow, Mars orange, Venus red, Mercury purple, Moon blue, Saturn
 green, with each virtue the cure for the opposite face's vice. They are not
 invented here. If that canon changes, this file follows it.

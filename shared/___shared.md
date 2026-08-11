@@ -33,5 +33,5 @@ rounding at 5% and put a solid core of the same edge behind it" travels; the CSS
 that offsets the shell 0.6 px does not.
 
 Colour language is shared with `Gadgets/3D Preview` (same axis-to-colour map)
-and the symbolism with `Gadgets/DOMY Watch` — see
+and the symbolism with `Gadgets/Watch Academy` — see
 [../src/__about/emblems.md](../src/__about/emblems.md).

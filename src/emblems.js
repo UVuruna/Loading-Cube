@@ -11,7 +11,7 @@
 // owner's own reading: blue is water and the moon is what pulls it, purple is
 // the night the moon hangs in. `elementsDomy` keeps the dial's strict letter
 // for anyone who wants it. `planets` and `virtues` are copied from
-// Gadgets/DOMY Watch/SYMBOLISM.md, never invented here — if that canon
+// Gadgets/Watch Academy/SYMBOLISM.md, never invented here — if that canon
 // changes, this file follows it, not the other way round.
 //
 // See src/__about/emblems.md.

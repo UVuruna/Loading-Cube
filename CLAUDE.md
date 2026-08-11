@@ -62,7 +62,7 @@ These are ADDITIONS to the root's. Both have teeth.
 ## Symbolism Is Borrowed, Not Invented
 
 The `planets` and `virtues` emblem families are copied from
-`Gadgets/DOMY Watch/SYMBOLISM.md`, and the axis-to-colour map is shared with
+`Gadgets/Watch Academy/SYMBOLISM.md`, and the axis-to-colour map is shared with
 `Gadgets/3D Preview`. If either changes, this project follows — never the
 other way round. The `elements` family is Loading Cube's own and is the default
 (owner 2026-08-07: moon on amethyst, water on sapphire).

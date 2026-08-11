@@ -3,7 +3,7 @@
   "version": 2,
 
   "axes": {
-    "_comment": "The house axis language, shared with Gadgets/3D Preview (shared/spec.json) and Gadgets/DOMY Watch (SYMBOLISM.md). Colour names are POSITIONAL — the palette decides the hue, never the meaning.",
+    "_comment": "The house axis language, shared with Gadgets/3D Preview (shared/spec.json) and Gadgets/Watch Academy (SYMBOLISM.md). Colour names are POSITIONAL — the palette decides the hue, never the meaning.",
     "gold":     {"axis": "+y", "position": "top",    "opposite": "amethyst"},
     "copper":   {"axis": "+x", "position": "right",  "opposite": "sapphire"},
     "ruby":     {"axis": "-z", "position": "back",   "opposite": "emerald"},
@@ -13,7 +13,7 @@
   },
 
   "sequence": {
-    "_comment": "Owner decree 2026-08-07. `tops` is the order each face takes the TOP, and it is the colour wheel: yellow, orange, red, purple, blue, green. By position: top, right, back, bottom, left, front. Every consecutive pair shares a cube edge, so every transition is one 90-degree tumble and no step is a double flip — tests/test_face_order.py proves it rather than trusting it. It is also, face for face, the order of the six arms on the DOMY Watch dial. `weekdays` is the `by-day` mode (owner 2026-08-08), indexed by JavaScript's Date#getDay(): index 0 is SUNDAY, and Sunday is the one day with no colour — it gets the monochrome cube instead (see `mono`).",
+    "_comment": "Owner decree 2026-08-07. `tops` is the order each face takes the TOP, and it is the colour wheel: yellow, orange, red, purple, blue, green. By position: top, right, back, bottom, left, front. Every consecutive pair shares a cube edge, so every transition is one 90-degree tumble and no step is a double flip — tests/test_face_order.py proves it rather than trusting it. It is also, face for face, the order of the six arms on the Watch Academy dial. `weekdays` is the `by-day` mode (owner 2026-08-08), indexed by JavaScript's Date#getDay(): index 0 is SUNDAY, and Sunday is the one day with no colour — it gets the monochrome cube instead (see `mono`).",
     "tops": ["gold", "copper", "ruby", "amethyst", "sapphire", "emerald"],
     "weekdays": ["mono", "sapphire", "copper", "amethyst", "gold", "ruby", "emerald"],
     "mode": "continuous",

@@ -99,7 +99,7 @@ Project rules and the stack decision: [CLAUDE.md](CLAUDE.md).
 
 ### Why JavaScript and no build step
 
-The first and largest consumer is a web page — the Remote User client already
+The first and largest consumer is a web page — the Vibe Coder client already
 draws its loading cube in CSS 3D, and every website that will use this one is
 a web page too. A cube is six rectangles and one rotation matrix, which needs
 no WebGL and no framework: plain ES modules, CSS 3D transforms, and SVG for

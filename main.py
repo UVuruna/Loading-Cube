@@ -22,11 +22,11 @@ from functools import partial
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parent
-# NOT 8777: that is the Remote User server's own port (Applications/Remote
+# NOT 8777: that is the Vibe Coder server's own port (Applications/Remote
 # User, server/config.py:78). Sharing it meant the playground refused to
 # start whenever the owner's remote-control server was up — and, worse, the
 # error invited whoever saw it to kill 'the other instance', which is
-# exactly what happened once, taking his running RemoteUser with it. A demo
+# exactly what happened once, taking his running VibeCoder with it. A demo
 # must never contend for a port something real is listening on.
 DEFAULT_PORT = 8814
 PAGE = "demo/index.html"
